@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "android:build": "cd android && ./gradlew assembleDebug",
+    "android:build:win": "cd android && gradlew.bat assembleDebug",
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview"
