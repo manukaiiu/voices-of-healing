@@ -1,5 +1,10 @@
 # voices-of-healing
 
+A lightweight audio player for daily readings.
+
+Primary development for android, and some testing with web-version.
+Using Vue + Capacitor.
+
 ## Project setup
 ```
 npm install
