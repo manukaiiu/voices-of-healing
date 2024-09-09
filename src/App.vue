@@ -5,17 +5,19 @@
       v-if="isWeb"
       type="file"
       accept="audio/*"
-      @change="handleFileSelection"
+      @change="handleFileSelectionWeb"
     />
+    <button v-else @click="selectAudioFileNative">Select Audio File</button>
+
     <button @click="playAudio" :disabled="!audioFileUrl">Play Selected Audio</button>
     <button @click="stopAudio" :disabled="!audioFileUrl">Stop</button>
   </div>
 </template>
 
 <script>
-import { Capacitor } from '@capacitor/core'; // Capacitor imports
-import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Capacitor } from '@capacitor/core';
 import { Media } from 'capacitor-media'; // Native media handling plugin (for Android)
+import { FilePicker } from 'capacitor-file-picker'; // File picker plugin
 
 export default {
   data() {
@@ -26,26 +28,28 @@ export default {
     };
   },
   methods: {
-    handleFileSelection(event) {
-      if (this.isWeb) {
-        const file = event.target.files[0];
-        if (file) {
-          this.audioFileUrl = URL.createObjectURL(file); // Web: Create a URL for the selected file
-        }
-      } else {
-        this.selectAudioFileNative(); // Native: Handle audio file selection on Android
+    handleFileSelectionWeb(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.audioFileUrl = URL.createObjectURL(file); // Web: Create a URL for the selected file
       }
     },
     async selectAudioFileNative() {
+      // Android: Open file picker and select the audio file
       try {
-        const result = await Filesystem.readFile({
-          path: 'path_to_audio_file_in_android', // Path to the audio file on Android
-          directory: Directory.External, // Adjust as needed
+        const result = await FilePicker.pickFiles({
+          types: ['audio/*'], // Allow only audio files
         });
-        this.audioFileUrl = result.uri;
+
+        // File URI should now be available in result.files[0].path
+        if (result.files.length > 0) {
+          const fileUri = result.files[0].path; // Path of the selected file
+          this.audioFileUrl = fileUri; // Set the file URL for playback
+        } else {
+          console.error('No file selected');
+        }
       } catch (error) {
-        console.error('Error reading file:', error);
-        alert('Audio file not found');
+        console.error('File selection failed:', error);
       }
     },
     playAudio() {
@@ -56,7 +60,7 @@ export default {
           this.audioFile.play();
         }
       } else {
-        // Native: Use Capacitor Media plugin
+        // Native: Use Capacitor Media plugin for native audio playback
         if (this.audioFileUrl) {
           this.audioFile = new Media(this.audioFileUrl);
           this.audioFile.play();
