@@ -5,5 +5,5 @@ project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/
 include ':capacitor-filesystem'
 project(':capacitor-filesystem').projectDir = new File('../node_modules/@capacitor/filesystem/android')
 
-include ':capacitor-media'
-project(':capacitor-media').projectDir = new File('../node_modules/capacitor-media/android/capacitor-media')
+include ':capacitor-file-picker'
+project(':capacitor-file-picker').projectDir = new File('../node_modules/capacitor-file-picker/android')

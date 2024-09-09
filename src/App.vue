@@ -16,7 +16,7 @@
 
 <script>
 import { Capacitor } from '@capacitor/core';
-import { Media } from 'capacitor-media'; // Native media handling plugin (for Android)
+import { Media } from '@ionic-native/media/ngx';
 import { FilePicker } from 'capacitor-file-picker'; // File picker plugin
 
 export default {
