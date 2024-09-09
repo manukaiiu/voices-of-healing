@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Voices of Healing</string>
+    <string name="title_activity_main">Voices of Healing</string>
+    <string name="package_name">com.kaiiu.voicesofhealing</string>
+    <string name="custom_url_scheme">com.kaiiu.voicesofhealing</string>
+</resources>

@@ -1,26 +1,45 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app">
+    <h1>Voices of Healing</h1>
+    <input type="file" accept="audio/*" @change="handleFileSelection" />
+    <button @click="playAudio" :disabled="!audioFileUrl">Play Selected Audio</button>
+    <button @click="stopAudio" :disabled="!audioFileUrl">Stop</button>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  data() {
+    return {
+      audioFileUrl: null,
+      audioFile: null,
+    };
+  },
+  methods: {
+    handleFileSelection(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.audioFileUrl = URL.createObjectURL(file); // Create a URL for the selected file
+      }
+    },
+    playAudio() {
+      if (this.audioFileUrl) {
+        this.audioFile = new Audio(this.audioFileUrl);
+        this.audioFile.play();
+      }
+    },
+    stopAudio() {
+      if (this.audioFile) {
+        this.audioFile.pause();
+        this.audioFile.currentTime = 0; // Reset the audio to the beginning
+      }
+    },
+  },
+};
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
