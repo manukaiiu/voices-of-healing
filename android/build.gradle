@@ -22,8 +22,29 @@ allprojects {
         google()
         mavenCentral()
     }
+
+    subprojects {
+        afterEvaluate { project ->
+            if (project.hasProperty("android")) {
+                project.android {
+                  namespace = "com.capacitor.media.custom"
+                  compileSdkVersion rootProject.ext.compileSdkVersion
+                  defaultConfig {
+                      minSdkVersion rootProject.ext.minSdkVersion
+                      targetSdkVersion rootProject.ext.targetSdkVersion
+                  }
+                }
+            }
+        }
+    }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+ext {
+    compileSdkVersion = 34
+    minSdkVersion = 22
+    targetSdkVersion = 34
 }
