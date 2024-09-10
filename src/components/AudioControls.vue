@@ -16,11 +16,11 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { computed, ref } from 'vue';
 
-  const props = defineProps({
-    audioFile: String, // Pass the audio file path
-  });
+  const props = defineProps<{
+    audioFilePath: string | null;
+  }>();
 
   const isPlaying = ref(false);
   const currentTime = ref(0);
@@ -43,7 +43,8 @@
     // Skip 5 seconds forward
   };
 
-  const seek = (event) => {
+  // const seek = (event) => {
+  const seek = () => {
     // Seek to the current position based on input range value
   };
 
