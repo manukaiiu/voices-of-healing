@@ -1,8 +1,4 @@
-* upload to git
-* learn steps to get it to run on homebase
-* understand logic for web vs capacitor
-* create apk
-* do a mvc test on android
+* do a mvc test on android -> current issue: permission denied when selecting audio file (from internal sdk memory)
 * do some styling and feature adding
 * test on my android
 * give as present to siiri
