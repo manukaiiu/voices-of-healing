@@ -14,71 +14,69 @@
   </div>
 </template>
 
-<script>
-import { Capacitor } from '@capacitor/core';
-import { Media } from '@ionic-native/media/ngx';
-import { FilePicker } from 'capacitor-file-picker'; // File picker plugin
+<script setup lang="ts">
+  import { ref } from 'vue';
+  import { Capacitor } from '@capacitor/core';
+  import { Media, MediaObject } from '@ionic-native/media/ngx';
 
-export default {
-  data() {
-    return {
-      isWeb: Capacitor.getPlatform() === 'web', // Check if running in the browser
-      audioFileUrl: null,
-      audioFile: null,
-    };
-  },
-  methods: {
-    handleFileSelectionWeb(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.audioFileUrl = URL.createObjectURL(file); // Web: Create a URL for the selected file
-      }
-    },
-    async selectAudioFileNative() {
-      // Android: Open file picker and select the audio file
+  const isWeb = Capacitor.getPlatform() === 'web';
+  const audioFileUrl = ref<string | null>(null);
+  let audioFile: HTMLAudioElement | MediaObject | null = null;
+  declare let fileChooser: any;
+
+  const handleFileSelectionWeb = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const file = target.files ? target.files[0] : null;
+    if (file) {
+      audioFileUrl.value = URL.createObjectURL(file);
+    }
+  };
+
+  const selectAudioFileNative = async () => {
+    if (Capacitor.getPlatform() === 'android') {
       try {
-        const result = await FilePicker.pickFiles({
-          types: ['audio/*'], // Allow only audio files
+        fileChooser.open((uri: string) => {
+          console.log('File URI:', uri);
+          audioFileUrl.value = uri;
+        }, (error: any) => {
+          console.error('File selection failed:', error);
         });
-
-        // File URI should now be available in result.files[0].path
-        if (result.files.length > 0) {
-          const fileUri = result.files[0].path; // Path of the selected file
-          this.audioFileUrl = fileUri; // Set the file URL for playback
-        } else {
-          console.error('No file selected');
-        }
       } catch (error) {
         console.error('File selection failed:', error);
       }
-    },
-    playAudio() {
-      if (this.isWeb) {
-        // Web: Use standard HTML5 Audio
-        if (this.audioFileUrl) {
-          this.audioFile = new Audio(this.audioFileUrl);
-          this.audioFile.play();
-        }
-      } else {
-        // Native: Use Capacitor Media plugin for native audio playback
-        if (this.audioFileUrl) {
-          this.audioFile = new Media(this.audioFileUrl);
-          this.audioFile.play();
-        }
+    } else {
+      console.error('File selection not supported on this platform');
+    }
+  };
+
+  const playAudio = () => {
+    if (isWeb) {
+      // Web: Use standard HTML5 Audio
+      if (audioFileUrl.value) {
+        audioFile = new Audio(audioFileUrl.value);
+        audioFile.play();
       }
-    },
-    stopAudio() {
-      if (this.audioFile) {
-        this.audioFile.pause();
-        this.audioFile.currentTime = 0; // Reset the audio to the beginning (for web)
+    } else {
+      // Native: Use Capacitor Media plugin for native audio playback
+      if (audioFileUrl.value) {
+        audioFile = new MediaObject(audioFileUrl.value);
+        audioFile.play();
       }
-    },
-  },
-};
+    }
+  };
+
+  const stopAudio = () => {
+    if (audioFile) {
+      audioFile.pause();
+      if (audioFile instanceof HTMLAudioElement) {
+        audioFile.currentTime = 0; // Reset the audio to the beginning (for web)
+      }
+    }
+  };
 </script>
 
-<style>
-#app {
-  text-align: center;
-}
+<style lang="scss" scoped>
+  #app {
+    text-align: center;
+  }
 </style>
