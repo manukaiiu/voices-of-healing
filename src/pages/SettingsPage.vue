@@ -1,8 +1,13 @@
 <template>
   <div class="settings-page">
     <label>Selected Folder:</label>
-    <p>{{ selectedFolder }}</p>
-    <button v-if="isWeb" @click="selectFolderWeb">Select Folder (Web)</button>
+    <p class="selected-folder">{{ selectedFolder }}</p>
+    <TextButton
+      v-if="isWeb"
+      class="select-folder-button"
+      button-text="Select Folder"
+      @click="selectFolderWeb"
+    />
     <button v-else @click="selectFolderAndroid">Select Folder (Android)</button>
     <p>Files recognized: {{ recognizedFileCount }}</p>
   </div>
@@ -13,6 +18,7 @@
   import { FileInfo,Filesystem } from '@capacitor/filesystem';
   import { Preferences } from '@capacitor/preferences';
   import { onMounted,ref } from 'vue';
+  import TextButton from '../components/buttons/TextButton.vue'
 
   declare let fileChooser: any;
 
@@ -50,7 +56,7 @@
     input.webkitdirectory = true;
     input.onchange = (event: any) => {
       const files = event.target.files;
-      console.log(`event files (web): ${files}`);
+      console.log(`event files (web): ${files}`, files);
       const folderPath = files[0].webkitRelativePath.split('/')[0]; // Get folder name
       selectedFolder.value = folderPath;
       console.log(`selected folder (web): ${selectedFolder.value}`);
@@ -114,7 +120,17 @@
 <style scoped lang="scss">
   .settings-page {
     padding: 20px;
+    padding-top: 40px;
     display: flex;
     flex-direction: column;
+    background-color: var(--color-page-bg);
+  }
+
+  .selected-folder {
+    margin-left: 20px;
+  }
+
+  .select-folder-button {
+    align-self: end;
   }
 </style>

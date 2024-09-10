@@ -1,5 +1,5 @@
 <template>
-  <img :src="svgContent" alt="SVG Icon" class="svg-icon" />
+  <div v-if="svgContent" v-html="svgContent" class="svg-icon" :style="{ color: strokeColor }"></div>
 </template>
 
 <script setup lang="ts">
@@ -20,15 +20,15 @@
   // Reference for the SVG content
   const svgContent = ref<string | undefined>(undefined);
 
-  // Import all SVGs as data URIs
-  const svgFiles = import.meta.glob('../../assets/icons/*.svg', { as: 'url' });
+  // Import all SVGs as raw content (instead of URLs)
+  const svgFiles = import.meta.glob('../../assets/icons/*.svg', { as: 'raw' });
 
-  // Function to load the appropriate SVG as a data URI
+  // Function to load the appropriate SVG content
   const loadSvg = async () => {
     try {
       const svgFile = svgFiles[`../../assets/icons/${props.svgName}.svg`];
       if (svgFile) {
-        svgContent.value = await svgFile(); // Load SVG as URL
+        svgContent.value = await svgFile(); // Load SVG as raw content
       } else {
         console.error(`SVG file for ${props.svgName} not found.`);
         svgContent.value = undefined;
@@ -49,5 +49,6 @@
     display: inline-block;
     width: 28px;
     height: 28px;
+    stroke: currentColor; /* Ensure the color applies to the SVG */
   }
 </style>

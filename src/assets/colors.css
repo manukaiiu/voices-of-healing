@@ -1,0 +1,11 @@
+:root {
+  --color-heavy-rose: #aa53ac;
+  --color-medium-rose: #bc6bbd;
+  --color-light-rose: #e5cae6;
+
+  --color-header-bg: var(--color-heavy-rose);
+  --color-page-bg: var(--color-light-rose);
+
+  --color-button-bg: var(--color-heavy-rose);
+  --color-button-bg-hover: var(--color-medium-rose)
+}

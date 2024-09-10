@@ -1,10 +1,8 @@
 <template>
-  <div class="button-wrapper">
-    <button class="button-standard" @mouseover="hovered = true" @mouseleave="hovered = false">
-      <!-- Pass the svgName and color to the SvgIcon component -->
-      <SvgIcon :svgName="svgName" :strokeColor="hovered ? hoverColor : defaultColor" />
-    </button>
-  </div>
+  <button class="button-standard" @mouseover="hovered = true" @mouseleave="hovered = false">
+    <!-- Pass the svgName and color to the SvgIcon component -->
+    <SvgIcon :svgName="svgName" :strokeColor="hovered ? hoverColor : defaultColor" />
+  </button>
 </template>
 
 <script setup lang="ts">
@@ -34,6 +32,7 @@
 <style scoped lang="scss">
   .button-standard {
     display: flex;
+    align-items: center;
     background-color: transparent;
     border: none;
     cursor: pointer;

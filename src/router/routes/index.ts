@@ -3,20 +3,29 @@ import { RouteComponent, RouteRecordRaw } from "vue-router";
 
 const routes: RouteRecordRaw[] = [
   {
-    children: [
-      {
-        component: (): RouteComponent => import(`@/pages/SettingsPage.vue`),
-        name: ERoutes.SETTINGS,
-        path: ERoutes.SETTINGS,
-      },
-      {
-        component: (): RouteComponent => import(`@/pages/AudioPlayerPage.vue`),
-        name: ERoutes.PLAYER,
-        path: ERoutes.PLAYER,
-      },
-    ],
-    component: (): RouteComponent => import(`@/layouts/MainLayout.vue`),
-    path: `/`,
+    path: '/',
+    redirect: ERoutes.PLAYER,
+  },
+  {
+    component: (): RouteComponent => import(`@/pages/SettingsPage.vue`),
+    name: ERoutes.SETTINGS,
+    path: ERoutes.SETTINGS,
+    meta: {
+      headerTitle: 'Settings',
+      showSettingsButton: false,
+      showBackButton: true,
+      backRoute: ERoutes.PLAYER,
+    }
+  },
+  {
+    component: (): RouteComponent => import(`@/pages/AudioPlayerPage.vue`),
+    name: ERoutes.PLAYER,
+    path: ERoutes.PLAYER,
+    meta: {
+      headerTitle: 'Selfcompassion',
+      showSettingsButton: true,
+      showBackButton: false,
+    }
   },
 ];
 
