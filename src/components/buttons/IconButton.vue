@@ -33,16 +33,16 @@
 
 <style scoped lang="scss">
   .button-standard {
+    display: flex;
     background-color: transparent;
     border: none;
     cursor: pointer;
     outline: none;
-    padding: 10px;
     transition: transform 0.3s ease;
 
     /* Apply rotation on hover */
     &:hover {
-      transform: rotate(90deg); /* Rotate the button on hover */
+      transform: rotate(60deg); /* Rotate the button on hover */
     }
 
     &:focus {

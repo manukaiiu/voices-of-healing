@@ -6,8 +6,8 @@
     <IconButton
       v-else @click="goToSettings"
       svg-name="cog"
-      default-color="#BB75BD"
-      hover-color="#AA53AC"/>
+      default-color="#FFF"
+      hover-color="#AAA"/>
   </header>
 </template>
 
@@ -30,10 +30,9 @@
 <style scoped lang="scss">
   header {
     display: flex;
-    justify-content: space-between;
-    padding: 10px;
+    justify-content: flex-end;
     background-color: #aa53ac;
-    height: 30px;
+    height: 42px;
   }
 
   .cog-icon {
