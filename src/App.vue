@@ -1,19 +1,21 @@
 <template>
   <div id="app">
-    <Header :isSettings="isSettingsPage" @navigateBack="goBack" />
+    <Header />
     <router-view class="content" />
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { onMounted, ref } from 'vue';
   import Header from './components/Header.vue';
+  import { useAudioStore } from './stores/audio.store';
 
+  const audioStore = useAudioStore();
   const isSettingsPage = ref(false);
 
-  const goBack = () => {
-    // Logic to go back from the settings page
-  };
+  onMounted(() => {
+    audioStore.loadFileMapFromPreferences(); // Load stored data into Pinia store
+  });
 </script>
 
 <style lang="scss">

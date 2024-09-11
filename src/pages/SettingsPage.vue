@@ -103,17 +103,6 @@
 
     audioStore.setAudioFiles(fileMap);
     audioStore.setSelectedFolder(selectedFolder.value ?? '');
-
-    persistFileMap();
-  };
-
-  const persistFileMap = async () => {
-    const serializedMap = JSON.stringify(fileMap);
-    if (isWeb) {
-      localStorage.setItem('fileMap', serializedMap);
-    } else {
-      await Preferences.set({ key: 'fileMap', value: serializedMap });
-    }
   };
 
   onMounted(loadStoredData);

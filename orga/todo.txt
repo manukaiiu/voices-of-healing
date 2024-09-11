@@ -1,7 +1,8 @@
 * make audio player work basically
 * style it nicely
 * add loading spinner for settings
-* make sure persisting works
+* make sure persisting works - load on start
+* force settings page if no valid settings are stored
 * load on app start from storage
 * add day switching
 * add calendar picker

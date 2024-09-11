@@ -8,9 +8,9 @@
       <button @click="skipForward">+5s</button>
     </div>
 
+    <p>{{ formattedCurrentTime }} / {{ formattedDuration }}</p>
     <div class="progress-bar">
       <input type="range" min="0" :max="audioDuration" v-model="currentTime" @input="seek" />
-      <p>{{ formattedCurrentTime }} / {{ formattedDuration }}</p>
     </div>
 
     <button @click="previousDay">Previous Day</button>
@@ -41,6 +41,7 @@
 
       // Load the new audio file for web
       audioFile = new Audio(props.audioFilePath);
+      console.log(`got audio file: `, audioFile);
       audioFile.addEventListener('loadedmetadata', () => {
         audioDuration.value = audioFile?.duration || 0;
       });

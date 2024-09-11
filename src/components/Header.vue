@@ -29,10 +29,6 @@
   const route = useRoute();
   const router = useRouter();
 
-  const props = defineProps({
-    isSettings: Boolean,
-  });
-
   const headerTitle = computed(() => route.meta.headerTitle || 'Default Title');
   const showBackButton = computed(() => route.meta.showBackButton || false);
   const showSettingsIcon = computed(() => route.meta.showSettingsButton || false);
@@ -41,9 +37,7 @@
     void router.push({ name: ERoutes.SETTINGS });
   };
 
-  const goBack = () => {
-    router.back();
-  };
+  const goBack = () => { router.back(); };
 </script>
 
 <style scoped lang="scss">

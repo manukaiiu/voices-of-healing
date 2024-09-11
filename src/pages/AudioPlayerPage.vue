@@ -1,7 +1,7 @@
 <template>
   <div class="audio-player">
     <h1>{{ audioTitle }}<br>{{ audioSubtitle }}</h1>
-    <p>{{ audioDate }}</p>
+    <h2>{{ audioDate }}</h2>
     <audio-controls :audio-file-path="currentAudioFilePath" />
     <TodayButton v-if="showTodayButton" @jumpToToday="jumpToToday" />
   </div>

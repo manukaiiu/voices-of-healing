@@ -1,5 +1,6 @@
 import { formatFilenameToDateString } from '@/utils/utils';
 import { defineStore } from 'pinia';
+import { Preferences } from '@capacitor/preferences';
 
 export interface IAudioState {
   selectedFolder: string,
@@ -13,11 +14,25 @@ export const useAudioStore = defineStore('audio', {
   }),
 
   actions: {
-    setSelectedFolder(folder: string) {
+    async setSelectedFolder(folder: string) {
       this.selectedFolder = folder;
+      await Preferences.set({ key: 'selectedFolder', value: folder });
     },
-    setAudioFiles(audioMap: Record<string, string>) {
+
+    async setAudioFiles(audioMap: Record<string, string>) {
       this.audioMap = audioMap;
+      await Preferences.set({ key: 'audioMap', value: JSON.stringify(audioMap) });
+    },
+
+    async loadFileMapFromPreferences() {
+      const { value } = await Preferences.get({ key: 'audioMap' });
+      if(value) {
+        this.audioMap = JSON.parse(value);
+      }
+      const folder = await Preferences.get({ key: 'selectedFolder' });
+      if(folder.value) {
+        this.selectedFolder = folder.value;
+      }
     },
   },
 
