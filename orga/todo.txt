@@ -1,4 +1,8 @@
-* do a mvc test on android -> current issue: permission denied when selecting audio file (from internal sdk memory)
-* do some styling and feature adding
+* make audio player work basically
+* style it nicely
+* add loading spinner for settings
+* make sure persisting works
+* load on app start from storage
+* add day switching
+* add calendar picker
 * test on my android
-* give as present to siiri

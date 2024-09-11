@@ -1,3 +1,4 @@
+import { formatFilenameToDateString } from '@/utils/utils';
 import { defineStore } from 'pinia';
 
 export interface IAudioState {
@@ -22,14 +23,17 @@ export const useAudioStore = defineStore('audio', {
 
   getters: {
     getAudioFileNameByDate: (state) => {
-      return (searchDate: Date): string | undefined => {
+      return (searchDate: Date): { filePath: string, formattedDate: string } => {
         const month = (searchDate.getMonth() + 1).toString().padStart(2, '0');
         const day = searchDate.getDate().toString().padStart(2, '0');
         const dateKey = `${month}-${day}`;
 
         console.log(`Retrieving audio file name for date "${searchDate}" with key "${dateKey}" => ${state.audioMap[dateKey]}`);
 
-        return state.audioMap[dateKey];
+        return {
+          filePath: `${state.selectedFolder}/${state.audioMap[dateKey]}`,
+          formattedDate: formatFilenameToDateString(state.audioMap[dateKey] ?? ''),
+        }
       };
     },
   },
