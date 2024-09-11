@@ -1,25 +1,52 @@
 <template>
   <div class="audio-controls">
-    <button @click="togglePlay">{{ isPlaying ? 'Pause' : 'Play' }}</button>
-    <button @click="stopAudio">Stop</button>
-
-    <div class="skip-buttons">
-      <button @click="skipBackward">-5s</button>
-      <button @click="skipForward">+5s</button>
-    </div>
-
+    <IconButton
+      v-if="!isPlaying"
+      svg-name="play"
+      @click="togglePlay"
+      class="icon-button-large"
+      default-color="#111"
+      hover-color="#555"
+      icon-size="80px"/>
+    <IconButton
+      v-if="isPlaying"
+      svg-name="pause"
+      @click="togglePlay"
+      class="icon-button-large"
+      default-color="#111"
+      hover-color="#555"
+      icon-size="80px"/>
     <p>{{ formattedCurrentTime }} / {{ formattedDuration }}</p>
     <div class="progress-bar">
       <input type="range" min="0" :max="audioDuration" v-model="currentTime" @input="seek" />
     </div>
-
-    <button @click="previousDay">Previous Day</button>
-    <button @click="nextDay">Next Day</button>
+    <div class="control-row">
+      <IconButton
+        svg-name="backward"
+        @click="skipBackward"
+        class="icon-button-small"
+        default-color="#111"
+        hover-color="#555"/>
+      <IconButton
+        v-if="showStop"
+        svg-name="stop"
+        @click="stopAudio"
+        class="icon-button-small"
+        default-color="#111"
+        hover-color="#555"/>
+      <IconButton
+        svg-name="forward"
+        @click="skipForward"
+        class="icon-button-small"
+        default-color="#111"
+        hover-color="#555"/>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref, watch, computed, onMounted } from 'vue';
+  import IconButton from './buttons/IconButton.vue';
 
   // Props for audio file path
   const props = defineProps<{
@@ -31,6 +58,11 @@
   const currentTime = ref(0);
   const audioDuration = ref(0);
   let audioFile: HTMLAudioElement | null = null; // Web audio element
+
+  const showStop = computed(() => {
+    if(!audioFile?.currentTime) return false;
+    return audioFile.currentTime > 0;
+  });
 
   // Load the audio file when the component is mounted or when the file path changes
   const loadAudioFile = () => {
@@ -76,14 +108,14 @@
 
   // Skip 5 seconds forward
   const skipForward = () => {
-    if (audioFile) {
+    if(audioFile) {
       audioFile.currentTime = Math.min(audioFile.currentTime + 5, audioDuration.value);
     }
   };
 
   // Skip 5 seconds backward
   const skipBackward = () => {
-    if (audioFile) {
+    if(audioFile) {
       audioFile.currentTime = Math.max(audioFile.currentTime - 5, 0);
     }
   };
@@ -91,7 +123,7 @@
   // Seek to the selected position
   const seek = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    if (audioFile) {
+    if(audioFile) {
       audioFile.currentTime = parseFloat(target.value);
     }
   };
@@ -110,18 +142,6 @@
   const formattedCurrentTime = computed(() => formatTime(currentTime.value));
   const formattedDuration = computed(() => formatTime(audioDuration.value));
 
-  // Go to the previous day (logic to load the previous day's audio)
-  const previousDay = () => {
-    // Your logic here
-    console.log('Loading previous day\'s audio');
-  };
-
-  // Go to the next day (logic to load the next day's audio)
-  const nextDay = () => {
-    // Your logic here
-    console.log('Loading next day\'s audio');
-  };
-
   // On mounted hook to load audio if the path is already set
   onMounted(loadAudioFile);
 </script>
@@ -134,13 +154,6 @@
     width: 100%;
   }
 
-  .skip-buttons {
-    display: grid;
-    grid-template-columns: repeat(2, auto);
-    gap: 10px;
-    margin: 10px 0;
-  }
-
   .progress-bar {
     display: flex;
     align-items: center;
@@ -151,5 +164,23 @@
   input[type='range'] {
     flex-grow: 1;
     margin-right: 10px;
+  }
+
+  .control-row {
+    display: flex;
+    justify-content: space-between;
+    height: 42px;
+    width: calc(100% - 40px);
+    padding: 0 20px;
+  }
+
+  .icon-button-small {
+
+  }
+
+  .icon-button-large {
+    width: 80px;
+    height: 80px;
+    margin: 20px;
   }
 </style>

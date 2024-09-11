@@ -18,55 +18,33 @@
   import { Capacitor } from '@capacitor/core';
   import { FileInfo,Filesystem } from '@capacitor/filesystem';
   import { Preferences } from '@capacitor/preferences';
-  import { onMounted,ref } from 'vue';
+  import { onMounted, ref } from 'vue';
   import TextButton from '../components/buttons/TextButton.vue'
   import { EButtonWidthMode } from '@/enums/button.enums';
-  import { useAudioStore } from '@/stores/audio.store';
+  import { IAudioInfo, useAudioStore } from '@/stores/audio.store';
 
   const audioStore = useAudioStore();
   const isWeb = Capacitor.getPlatform() === 'web';
   declare let fileChooser: any;
   const selectedFolder = ref<string | null>(null);
   const recognizedFileCount = ref<number>(0);
-  let fileMap: Record<string, string> = {}; // Store MM-DD -> file path
-
-  // Load previously stored folder and file map on app startup
-  const loadStoredData = async () => {
-    const folder = isWeb
-      ? localStorage.getItem('selectedFolder')
-      : (await Preferences.get({ key: 'selectedFolder' })).value;
-    if(folder) {
-      selectedFolder.value = folder;
-      console.log(`found selected folder: `, fileMap);
-    }
-
-    const storedMap = isWeb
-      ? localStorage.getItem('fileMap')
-      : (await Preferences.get({ key: 'fileMap' })).value;
-    if(storedMap) {
-      fileMap = JSON.parse(storedMap);
-      console.log(`found stored file map: `, fileMap);
-    }
-    recognizedFileCount.value = Object.keys(fileMap).length;
-  };
+  let fileMap: Record<string, IAudioInfo> = {}; // Store MM-DD -> file path
 
   const selectFolderWeb = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.webkitdirectory = true;
+
     input.onchange = (event: any) => {
       const files = event.target.files;
-      console.log(`event files (web): ${files}`, files);
-      const folderPath = files[0].webkitRelativePath.split('/')[0]; // Get folder name
+      const folderPath = files[0].webkitRelativePath.split('/')[0];
       selectedFolder.value = folderPath;
-      console.log(`selected folder (web): ${selectedFolder.value}`);
-      localStorage.setItem('selectedFolder', folderPath);
       analyzeFiles([...files]);
     };
     input.click();
   };
 
-  const selectFolderAndroid = async () => {
+  const selectFolderAndroid = async () => { /*
     fileChooser.open({
       mime: 'vnd.android.document/directory', // Use this to pick a folder
     }).then((uri: string) => {
@@ -82,10 +60,10 @@
       analyzeFiles(fileInfos.files);
     } else {
       console.error('Need a folder to store!');
-    }
+    } */
   };
 
-  const analyzeFiles = (files: FileInfo[]) => {
+  const analyzeFiles = (files: File[]) => {
     const regex = /^Selfcompassion Day by Day - (\d{2}-\d{2})\.mp3$/;
     fileMap = {};
 
@@ -93,7 +71,12 @@
       const match = file.name.match(regex);
       if(match) {
         // console.log(`> file matched with match: ${JSON.stringify(match, null, 2)} and file: ${JSON.stringify(file, null, 2)}` );
-        fileMap[match[1]] = match[0];
+        const path = URL.createObjectURL(file);
+
+        fileMap[match[1]] = {
+          path,
+          name: match[0],
+        }
       }
     }
 
@@ -104,8 +87,6 @@
     audioStore.setAudioFiles(fileMap);
     audioStore.setSelectedFolder(selectedFolder.value ?? '');
   };
-
-  onMounted(loadStoredData);
 </script>
 
 <style scoped lang="scss">

@@ -6,7 +6,8 @@
     @mouseleave="hovered = false">
     <SvgIcon
       :svgName="svgName"
-      :strokeColor="hovered ? hoverColor : defaultColor" />
+      :strokeColor="hovered ? hoverColor : defaultColor"
+      :style="{ width: iconSize, height: iconSize }" />
   </button>
 </template>
 
@@ -32,6 +33,10 @@
       type: Object as PropType<EButtonAnimation>,
       default: EButtonAnimation.PULSE,
     },
+    iconSize: {
+      type: String,
+      default: '24px',
+    }
   });
 
   const animationClass = computed(() => {

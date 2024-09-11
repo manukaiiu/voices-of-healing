@@ -1,38 +1,88 @@
 <template>
   <div class="audio-player">
     <h1>{{ audioTitle }}<br>{{ audioSubtitle }}</h1>
-    <h2>{{ audioDate }}</h2>
+    <div class="date-control">
+      <div class="date-control-top-row">
+        <IconButton
+          svg-name="chevron-left"
+          @click="previousDay"
+          class="previous-day"
+          default-color="#111"
+          hover-color="#555"/>
+        <h2 class="today">{{ audioDate }}</h2>
+        <IconButton
+          svg-name="chevron-right"
+          @click="nextDay"
+          class="next-day"
+          default-color="#111"
+          hover-color="#555"/>
+      </div>
+      <div class="date-control-bottom-row">
+        <TextButton
+          v-if="showTodayButton"
+          class="today"
+          text="Today"
+          :width-mode="EButtonWidthMode.SLIM"
+          @click="jumpToToday"/>
+      </div>
+    </div>
     <audio-controls :audio-file-path="currentAudioFilePath" />
-    <TodayButton v-if="showTodayButton" @jumpToToday="jumpToToday" />
   </div>
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
+  import { computed, onMounted, ref } from 'vue';
   import AudioControls from '@/components/AudioControls.vue';
-  import TodayButton from '@/components/TodayButton.vue';
   import { useAudioStore } from '@/stores/audio.store';
+  import IconButton from '@/components/buttons/IconButton.vue';
+  import { EButtonWidthMode } from '@/enums/button.enums';
 
   const audioStore = useAudioStore();
 
   // Logic to fetch current audio, title, and date based on today's date
   const audioTitle = ref('Selfcompassion');
   const audioSubtitle = ref('Day by Day');
-  const audioDate = ref((new Date()).toDateString()); // For display
-  const showTodayButton = ref(false);
-
+  const audioDate = ref('');
+  const todayDate = ref<Date>(new Date());
+  const currentDate = ref<Date>(new Date());
   const currentAudioFilePath = ref<string | null>(null);
 
+  const showTodayButton = computed(() => {
+    console.log(`today is: ${todayDate.value}`);
+    console.log(`current date is: ${currentDate.value}`);
+    console.log(`thus display button = ${todayDate.value.getFullYear() !== currentDate.value.getFullYear() ||
+           todayDate.value.getMonth() !== currentDate.value.getMonth() ||
+           todayDate.value.getDate() !== currentDate.value.getDate()}`);
+    return todayDate.value.getFullYear() !== currentDate.value.getFullYear() ||
+           todayDate.value.getMonth() !== currentDate.value.getMonth() ||
+           todayDate.value.getDate() !== currentDate.value.getDate();
+  });
+
   const jumpToToday = () => {
-    // Logic to jump to today's audio
+    currentDate.value = new Date(todayDate.value);
+    selectAudioForDate(todayDate.value);
+  }
+  const previousDay = () => {
+    currentDate.value = new Date(currentDate.value
+      .setDate(currentDate.value.getDate() - 1));
+    selectAudioForDate(currentDate.value);
+  };
+  const nextDay = () => {
+    currentDate.value = new Date(currentDate.value
+      .setDate(currentDate.value.getDate() + 1));
+    selectAudioForDate(currentDate.value);
   };
 
-  onMounted(() => {
-    // { audioPath: currentAudioFilePath.value, formattedDate: audioDate.value } = audioStore.getAudioFileNameByDate(new Date());
-    const audioStoreEntry = audioStore.getAudioFileNameByDate(new Date());
+  const selectAudioForDate = (desiredDate: Date): void => {
+    const audioStoreEntry = audioStore.getAudioFileNameByDate(desiredDate);
     currentAudioFilePath.value = audioStoreEntry.filePath;
     audioDate.value = audioStoreEntry.formattedDate;
     console.log(`Audio Player working with filepath: ${currentAudioFilePath.value}`);
+  }
+
+  onMounted(() => {
+    // { audioPath: currentAudioFilePath.value, formattedDate: audioDate.value } = audioStore.getAudioFileNameByDate(new Date());
+    selectAudioForDate(new Date());
   });
 </script>
 
@@ -40,9 +90,39 @@
   .audio-player {
     text-align: center;
     background-color: var(--color-page-bg);
+    padding: 10px;
+    padding-top: 20px;
   }
 
   .subTitle {
     margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .date-control {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .date-control-top-row {
+    background-color: var(--color-page-bg);
+    display: grid;
+    grid-template-columns: 42px 1fr 42px;
+    grid-template-rows: auto;
+    grid-template-areas: "previous current next";
+  }
+
+  .previous-day {
+    grid-area: previous;
+  }
+
+  .today {
+    grid-area: current;
+    align-self: center;
+    padding-top: 2px;
+  }
+
+  .next-day {
+    grid-area: next;
   }
 </style>

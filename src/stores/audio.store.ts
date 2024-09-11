@@ -4,7 +4,12 @@ import { Preferences } from '@capacitor/preferences';
 
 export interface IAudioState {
   selectedFolder: string,
-  audioMap: Record<string, string>;
+  audioMap: Record<string, IAudioInfo>;
+}
+
+export interface IAudioInfo {
+  path: string,
+  name: string,
 }
 
 export const useAudioStore = defineStore('audio', {
@@ -19,7 +24,7 @@ export const useAudioStore = defineStore('audio', {
       await Preferences.set({ key: 'selectedFolder', value: folder });
     },
 
-    async setAudioFiles(audioMap: Record<string, string>) {
+    async setAudioFiles(audioMap: Record<string, IAudioInfo>) {
       this.audioMap = audioMap;
       await Preferences.set({ key: 'audioMap', value: JSON.stringify(audioMap) });
     },
@@ -46,8 +51,9 @@ export const useAudioStore = defineStore('audio', {
         console.log(`Retrieving audio file name for date "${searchDate}" with key "${dateKey}" => ${state.audioMap[dateKey]}`);
 
         return {
-          filePath: `${state.selectedFolder}/${state.audioMap[dateKey]}`,
-          formattedDate: formatFilenameToDateString(state.audioMap[dateKey] ?? ''),
+          // filePath: `${state.selectedFolder}/${state.audioMap[dateKey]}`,
+          filePath: state.audioMap[dateKey].path ?? '',
+          formattedDate: formatFilenameToDateString(state.audioMap[dateKey].name ?? ''),
         }
       };
     },
