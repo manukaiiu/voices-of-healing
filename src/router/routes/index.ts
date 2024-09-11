@@ -22,7 +22,7 @@ const routes: RouteRecordRaw[] = [
     name: ERoutes.PLAYER,
     path: ERoutes.PLAYER,
     meta: {
-      headerTitle: 'Selfcompassion',
+      headerTitle: 'Voices of Healing',
       showSettingsButton: true,
       showBackButton: false,
     }

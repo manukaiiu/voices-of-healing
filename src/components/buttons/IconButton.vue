@@ -1,15 +1,20 @@
 <template>
-  <button class="button-standard" @mouseover="hovered = true" @mouseleave="hovered = false">
-    <!-- Pass the svgName and color to the SvgIcon component -->
-    <SvgIcon :svgName="svgName" :strokeColor="hovered ? hoverColor : defaultColor" />
+  <button
+    class="button-standard"
+    :class="animationClass"
+    @mouseover="hovered = true"
+    @mouseleave="hovered = false">
+    <SvgIcon
+      :svgName="svgName"
+      :strokeColor="hovered ? hoverColor : defaultColor" />
   </button>
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { computed, PropType, ref } from 'vue';
   import SvgIcon from '../system/SvgIcon.vue';
+  import { EButtonAnimation } from '@/enums/button.enums';
 
-  // Define props to receive the SVG name and allow for color customization
   const props = defineProps({
     svgName: {
       type: String,
@@ -17,15 +22,21 @@
     },
     defaultColor: {
       type: String,
-      default: '#555', // Default icon color
+      default: '#555',
     },
     hoverColor: {
       type: String,
-      default: '#3498db', // Color on hover
+      default: '#3498db',
+    },
+    animationType: {
+      type: Object as PropType<EButtonAnimation>,
+      default: EButtonAnimation.PULSE,
     },
   });
 
-  // Reactive variable to track hover state
+  const animationClass = computed(() => {
+    return `${props.animationType}-animation`;
+  });
   const hovered = ref(false);
 </script>
 
@@ -38,14 +49,18 @@
     cursor: pointer;
     outline: none;
     transition: transform 0.3s ease;
+  }
 
-    /* Apply rotation on hover */
-    &:hover {
-      transform: rotate(60deg); /* Rotate the button on hover */
-    }
+  .pulse-animation:hover { animation: pulse 0.5s ease; }
+  .rotate-animation:hover { animation: rotate 0.5s ease; }
 
-    &:focus {
-      outline: none;
-    }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  @keyframes rotate {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(60deg); }
   }
 </style>

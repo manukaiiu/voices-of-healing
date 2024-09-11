@@ -1,16 +1,33 @@
 <template>
-  <button class="button">{{ buttonText }}</button>
+  <button
+    class="button"
+    :class="widthModeClass">
+    {{ text }}
+  </button>
 </template>
 
 <script setup lang="ts">
+import { EButtonWidthMode } from '@/enums/button.enums';
+import { computed, PropType } from 'vue';
+
   const props = defineProps({
-    buttonText: String,
+    text: {
+      type: String,
+      default: 'missing text',
+    },
+    widthMode: {
+      type: Object as PropType<EButtonWidthMode>,
+      default: EButtonWidthMode.SLIM,
+    },
+  });
+
+  const widthModeClass = computed(() => {
+    return `width-mode-${props.widthMode}`;
   });
 </script>
 
 <style scoped lang="scss">
   .button {
-    width: fit-content;
     background-color: var(--color-button-bg);
     color: #f8f8f8;
     padding: 12px 24px;
@@ -42,5 +59,13 @@
     background-color: #d4aad5; /* Lighter color for disabled state */
     cursor: not-allowed;
     opacity: 0.7;
+  }
+
+  .width-mode-slim {
+    width: fit-content;
+  }
+
+  .width-mode-wide {
+    width: 100%;
   }
 </style>

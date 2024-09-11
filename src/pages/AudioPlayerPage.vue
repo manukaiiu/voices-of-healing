@@ -8,13 +8,16 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { onMounted, ref } from 'vue';
   import AudioControls from '@/components/AudioControls.vue';
   import TodayButton from '@/components/TodayButton.vue';
+import { useAudioStore } from '@/stores/audio.store';
+
+  const audioStore = useAudioStore();
 
   // Logic to fetch current audio, title, and date based on today's date
-  const audioTitle = ref('Title of Today’s Audio');
-  const audioDate = ref('Sept 15'); // For display
+  const audioTitle = ref('Selfcompassion - Day by Day');
+  const audioDate = ref((new Date()).toDateString()); // For display
   const showTodayButton = ref(false);
 
   const currentAudioFile = ref(null);
@@ -22,6 +25,11 @@
   const jumpToToday = () => {
     // Logic to jump to today's audio
   };
+
+  onMounted(() => {
+    const audioFileName = audioStore.getAudioFileNameByDate(new Date());
+    console.log(`Audio Player working with filename: ${audioFileName}`);
+  });
 </script>
 
 <style scoped lang="scss">

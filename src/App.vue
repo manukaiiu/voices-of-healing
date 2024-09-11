@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Header :isSettings="isSettingsPage" @navigateBack="goBack" />
-    <router-view />
+    <router-view class="content" />
   </div>
 </template>
 
@@ -25,5 +25,12 @@
 
   body {
     margin: 0;
+    height: 100vh;
+  }
+
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 </style>

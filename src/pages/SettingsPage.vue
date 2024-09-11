@@ -1,15 +1,16 @@
 <template>
   <div class="settings-page">
-    <label>Selected Folder:</label>
-    <p class="selected-folder">{{ selectedFolder }}</p>
+    <label class="labelHeading">Selected Folder</label>
+    <p class="text">{{ selectedFolder }}</p>
+    <p class="text">Files: {{ recognizedFileCount }}</p>
     <TextButton
       v-if="isWeb"
       class="select-folder-button"
-      button-text="Select Folder"
+      text="Select Folder"
+      :width-mode="EButtonWidthMode.WIDE"
       @click="selectFolderWeb"
     />
     <button v-else @click="selectFolderAndroid">Select Folder (Android)</button>
-    <p>Files recognized: {{ recognizedFileCount }}</p>
   </div>
 </template>
 
@@ -19,12 +20,12 @@
   import { Preferences } from '@capacitor/preferences';
   import { onMounted,ref } from 'vue';
   import TextButton from '../components/buttons/TextButton.vue'
+  import { EButtonWidthMode } from '@/enums/button.enums';
+  import { useAudioStore } from '@/stores/audio.store';
 
-  declare let fileChooser: any;
-
-  // Detect platform (web or android)
+  const audioStore = useAudioStore();
   const isWeb = Capacitor.getPlatform() === 'web';
-
+  declare let fileChooser: any;
   const selectedFolder = ref<string | null>(null);
   const recognizedFileCount = ref<number>(0);
   let fileMap: Record<string, string> = {}; // Store MM-DD -> file path
@@ -49,7 +50,6 @@
     recognizedFileCount.value = Object.keys(fileMap).length;
   };
 
-  // Function to select folder in web
   const selectFolderWeb = () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -85,26 +85,28 @@
     }
   };
 
-  // Function to analyze files and store matching ones
   const analyzeFiles = (files: FileInfo[]) => {
     const regex = /^Selfcompassion Day by Day - (\d{2}-\d{2})\.mp3$/;
     fileMap = {};
 
-    for (const file of files) {
+    for(const file of files) {
       const match = file.name.match(regex);
-      if (match) {
-        const mmdd = match[1]; // Extract MM-DD
-        fileMap[mmdd] = file.uri;
+      if(match) {
+        // console.log(`> file matched with match: ${JSON.stringify(match, null, 2)} and file: ${JSON.stringify(file, null, 2)}` );
+        fileMap[match[1]] = match[0];
       }
     }
 
     recognizedFileCount.value = Object.keys(fileMap).length;
     console.log(`found file count: ${recognizedFileCount.value}`);
     console.log(`create map: `, fileMap);
+
+    audioStore.setAudioFiles(fileMap);
+    audioStore.setSelectedFolder(selectedFolder.value ?? '');
+
     persistFileMap();
   };
 
-  // Persist the analyzed file map
   const persistFileMap = async () => {
     const serializedMap = JSON.stringify(fileMap);
     if (isWeb) {
@@ -126,11 +128,16 @@
     background-color: var(--color-page-bg);
   }
 
-  .selected-folder {
+  .labelHeading {
+    font-weight: 600;
+    margin: 20px 0;
+  }
+
+  .text {
     margin-left: 20px;
   }
 
   .select-folder-button {
-    align-self: end;
+    margin-top: 20px;
   }
 </style>

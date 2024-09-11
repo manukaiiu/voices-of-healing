@@ -14,15 +14,17 @@
       class="settings-button"
       svg-name="cog"
       default-color="#FFF"
-      hover-color="#DDD"/>
+      hover-color="#DDD"
+      :animation-type="EButtonAnimation.ROTATE"/>
   </header>
 </template>
 
 <script setup lang="ts">
+  import { EButtonAnimation } from '@/enums/button.enums';
   import { ERoutes } from '@/enums/route.enums';
-  import { useRoute, useRouter } from 'vue-router';
-  import IconButton from './buttons/IconButton.vue';
   import { computed } from 'vue';
+  import { useRoute,useRouter } from 'vue-router';
+  import IconButton from './buttons/IconButton.vue';
 
   const route = useRoute();
   const router = useRouter();
