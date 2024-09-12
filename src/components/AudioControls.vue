@@ -1,45 +1,50 @@
 <template>
   <div class="audio-controls">
-    <IconButton
-      v-if="!isPlaying"
-      svg-name="play"
-      @click="togglePlay"
-      class="icon-button-large"
-      default-color="#111"
-      hover-color="#555"
-      icon-size="80px"/>
-    <IconButton
-      v-if="isPlaying"
-      svg-name="pause"
-      @click="togglePlay"
-      class="icon-button-large"
-      default-color="#111"
-      hover-color="#555"
-      icon-size="80px"/>
-    <p>{{ formattedCurrentTime }} / {{ formattedDuration }}</p>
-    <div class="progress-bar">
-      <input type="range" min="0" :max="audioDuration" v-model="currentTime" @input="seek" />
+    <div class="content-top">
+      <IconButton
+        v-if="!isPlaying"
+        svg-name="play"
+        @click="togglePlay"
+        class="icon-button-large"
+        icon-size="120px" />
+      <IconButton
+        v-if="isPlaying"
+        svg-name="pause"
+        @click="togglePlay"
+        class="icon-button-large"
+        icon-size="120px" />
     </div>
-    <div class="control-row">
-      <IconButton
-        svg-name="backward"
-        @click="skipBackward"
-        class="icon-button-small"
-        default-color="#111"
-        hover-color="#555"/>
-      <IconButton
-        v-if="showStop"
-        svg-name="stop"
-        @click="stopAudio"
-        class="icon-button-small"
-        default-color="#111"
-        hover-color="#555"/>
-      <IconButton
-        svg-name="forward"
-        @click="skipForward"
-        class="icon-button-small"
-        default-color="#111"
-        hover-color="#555"/>
+    <div class="content-bottom">
+      <span class="current-time">
+        {{ formattedCurrentTime }} / {{ formattedDuration }}
+      </span>
+      <div class="progress-bar">
+        <input
+          type="range"
+          min="0"
+          :max="audioDuration"
+          v-model="currentTime"
+          @input="seek" />
+      </div>
+      <div class="control-row">
+        <IconButton
+          svg-name="backward"
+          @click="skipBackward" />
+        <IconButton
+          v-if="!isPlaying"
+          svg-name="play"
+          @click="togglePlay" />
+        <IconButton
+          v-if="isPlaying"
+          svg-name="pause"
+          @click="togglePlay" />
+        <IconButton
+          svg-name="stop"
+          @click="stopAudio" />
+        <IconButton
+          svg-name="forward"
+          @click="skipForward" />
+      </div>
     </div>
   </div>
 </template>
@@ -57,12 +62,8 @@
   const isPlaying = ref(false);
   const currentTime = ref(0);
   const audioDuration = ref(0);
+  const showStop = ref(false);
   let audioFile: HTMLAudioElement | null = null; // Web audio element
-
-  const showStop = computed(() => {
-    if(!audioFile?.currentTime) return false;
-    return audioFile.currentTime > 0;
-  });
 
   // Load the audio file when the component is mounted or when the file path changes
   const loadAudioFile = () => {
@@ -81,11 +82,14 @@
       // Update current time as the audio plays
       audioFile.addEventListener('timeupdate', () => {
         currentTime.value = audioFile?.currentTime || 0;
+        // showStop.value = !!audioFile?.currentTime && audioFile.currentTime > 0;
+
+        if(audioFile?.duration
+          && currentTime.value >= audioFile?.duration) stopAudio();
       });
     }
   };
 
-  // Play/Pause toggle
   const togglePlay = () => {
     if (audioFile) {
       if (isPlaying.value) {
@@ -97,11 +101,11 @@
     }
   };
 
-  // Stop audio
   const stopAudio = () => {
-    if (audioFile) {
+    console.log(`stopping audio`);
+    if(audioFile) {
       audioFile.pause();
-      audioFile.currentTime = 0; // Reset to start
+      audioFile.currentTime = 0;
       isPlaying.value = false;
     }
   };
@@ -148,10 +152,29 @@
 
 <style scoped lang="scss">
   .audio-controls {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr min-content;
     align-items: center;
     width: 100%;
+    height: 100%;
+    margin-bottom: 20px;
+  }
+
+  .content-top {
+    display: flex;
+    justify-content: center;
+  }
+
+  .icon-button-large {
+    width: 120px;
+    height: 120px;
+    margin: 20px;
+  }
+
+  .content-bottom {
+    display: flex;
+    flex-direction: column;
   }
 
   .progress-bar {
@@ -166,6 +189,7 @@
     margin-right: 10px;
   }
 
+
   .control-row {
     display: flex;
     justify-content: space-between;
@@ -174,13 +198,9 @@
     padding: 0 20px;
   }
 
-  .icon-button-small {
-
-  }
-
-  .icon-button-large {
-    width: 80px;
-    height: 80px;
-    margin: 20px;
+  .current-time {
+    margin: 0;
+    display: flex;
+    align-self: center;
   }
 </style>

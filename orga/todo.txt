@@ -1,9 +1,10 @@
-* style it nicely
+* style progress-bar
 * add loading spinner for settings
 * make sure persisting works - load on start
 * make sure storage is cleared if new directory is set
 * force settings page if no valid settings are stored
 * load on app start from storage
-* add day switching
+* fix bug: change day -> current position is not reset
 * add calendar picker
 * test on my android
+* cleanup code and refactor

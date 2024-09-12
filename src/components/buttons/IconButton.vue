@@ -23,11 +23,11 @@
     },
     defaultColor: {
       type: String,
-      default: '#555',
+      default: '#111',
     },
     hoverColor: {
       type: String,
-      default: '#3498db',
+      default: '#555',
     },
     animationType: {
       type: Object as PropType<EButtonAnimation>,
@@ -49,6 +49,7 @@
   .button-standard {
     display: flex;
     align-items: center;
+    justify-content: center;
     background-color: transparent;
     border: none;
     cursor: pointer;

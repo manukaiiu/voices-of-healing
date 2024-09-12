@@ -49,6 +49,7 @@
     align-items: center;
     background-color: var(--color-header-bg);
     height: 54px;
+    padding: 0 10px;
   }
 
   .back-button {
