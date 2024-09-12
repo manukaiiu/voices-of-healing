@@ -10,6 +10,7 @@ export interface IAudioState {
 export interface IAudioInfo {
   path: string,
   name: string,
+  fileHandle: any,
 }
 
 export const useAudioStore = defineStore('audio', {
@@ -26,6 +27,7 @@ export const useAudioStore = defineStore('audio', {
 
     async setAudioFiles(audioMap: Record<string, IAudioInfo>) {
       this.audioMap = audioMap;
+      console.log(`STORING audiomap: ${JSON.stringify(audioMap, null, 2)}`);
       await Preferences.set({ key: 'audioMap', value: JSON.stringify(audioMap) });
     },
 
@@ -33,6 +35,7 @@ export const useAudioStore = defineStore('audio', {
       const { value } = await Preferences.get({ key: 'audioMap' });
       if(value) {
         this.audioMap = JSON.parse(value);
+        console.log(`RETRIEVED audiomap: ${JSON.stringify(this.audioMap, null, 2)}`);
       }
       const folder = await Preferences.get({ key: 'selectedFolder' });
       if(folder.value) {
@@ -57,6 +60,8 @@ export const useAudioStore = defineStore('audio', {
         }
       };
     },
+
+    getSelectedFolder: (state) => { return () => { return state.selectedFolder; }},
   },
 
   // persist: true, // Optional: use a plugin to persist state to localStorage

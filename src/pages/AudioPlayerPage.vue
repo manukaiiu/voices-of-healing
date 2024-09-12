@@ -36,8 +36,11 @@
   import { useAudioStore } from '@/stores/audio.store';
   import IconButton from '@/components/buttons/IconButton.vue';
   import { EButtonWidthMode } from '@/enums/button.enums';
+  import { useRouter } from 'vue-router';
+  import { ERoutes } from '@/enums/route.enums';
 
   const audioStore = useAudioStore();
+  const router = useRouter();
 
   // Logic to fetch current audio, title, and date based on today's date
   const audioTitle = ref('Selfcompassion');
@@ -81,6 +84,10 @@
   }
 
   onMounted(() => {
+    const selectedFolder = audioStore.getSelectedFolder();
+    if(!selectedFolder) {
+      void router.push({ name: ERoutes.SETTINGS });
+    }
     // { audioPath: currentAudioFilePath.value, formattedDate: audioDate.value } = audioStore.getAudioFileNameByDate(new Date());
     selectAudioForDate(new Date());
   });

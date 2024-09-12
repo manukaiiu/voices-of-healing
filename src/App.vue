@@ -1,7 +1,10 @@
 <template>
   <div id="app">
-    <Header />
-    <router-view class="content" />
+    <div v-if="appLoaded">
+      <Header />
+      <router-view class="content" />
+    </div>
+    <div v-else>Waiting for Permission</div>
   </div>
 </template>
 
@@ -9,12 +12,22 @@
   import { onMounted, ref } from 'vue';
   import Header from './components/Header.vue';
   import { useAudioStore } from './stores/audio.store';
+  import { checkStoragePermissions } from './utils/permissions';
+  import { ERoutes } from './enums/route.enums';
+  import { useRouter } from 'vue-router';
 
   const audioStore = useAudioStore();
-  const isSettingsPage = ref(false);
+  const appLoaded = ref(false);
+  const router = useRouter();
 
-  onMounted(() => {
-    audioStore.loadFileMapFromPreferences(); // Load stored data into Pinia store
+  onMounted(async () => {
+    appLoaded.value = await checkStoragePermissions();
+
+    await audioStore.loadFileMapFromPreferences();
+    const selectedFolder = audioStore.getSelectedFolder();
+    if(!selectedFolder) {
+      void router.push({ name: ERoutes.SETTINGS });
+    }
   });
 </script>
 
