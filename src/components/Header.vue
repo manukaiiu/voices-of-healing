@@ -34,7 +34,7 @@
   const showSettingsIcon = computed(() => route.meta.showSettingsButton || false);
 
   const goToSettings = (): void => {
-    void router.push({ name: ERoutes.SETTINGS });
+    void router.push({ name: ERoutes.SETUP });
   };
 
   const goBack = () => { router.back(); };

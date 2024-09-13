@@ -84,12 +84,12 @@
   }
 
   onMounted(() => {
-    const selectedFolder = audioStore.getSelectedFolder();
-    if(!selectedFolder) {
-      void router.push({ name: ERoutes.SETTINGS });
-    }
-    // { audioPath: currentAudioFilePath.value, formattedDate: audioDate.value } = audioStore.getAudioFileNameByDate(new Date());
-    selectAudioForDate(new Date());
+    // const selectedFolder = audioStore.getSelectedFolder();
+    // if(!selectedFolder) {
+    //   void router.push({ name: ERoutes.SETUP });
+    // }
+
+    // selectAudioForDate(new Date());
   });
 </script>
 

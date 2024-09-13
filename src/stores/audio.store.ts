@@ -2,8 +2,14 @@ import { formatFilenameToDateString } from '@/utils/utils';
 import { defineStore } from 'pinia';
 import { Preferences } from '@capacitor/preferences';
 
+export enum EConfigState {
+  INITIAL = 'initial',
+  SETUP = 'folder-created',
+  READY = 'files-scanned',
+};
+
 export interface IAudioState {
-  selectedFolder: string,
+  configState: EConfigState,
   audioMap: Record<string, IAudioInfo>;
 }
 
@@ -14,14 +20,14 @@ export interface IAudioInfo {
 
 export const useAudioStore = defineStore('audio', {
   state: (): IAudioState => ({
-    selectedFolder: '',
+    configState: EConfigState.INITIAL,
     audioMap: {},
   }),
 
   actions: {
-    async setSelectedFolder(folder: string) {
-      this.selectedFolder = folder;
-      await Preferences.set({ key: 'selectedFolder', value: folder });
+    async setConfigState(configState: EConfigState) {
+      this.configState = configState;
+      await Preferences.set({ key: 'configState', value: configState });
     },
 
     async setAudioFiles(audioMap: Record<string, IAudioInfo>) {
@@ -30,17 +36,28 @@ export const useAudioStore = defineStore('audio', {
       await Preferences.set({ key: 'audioMap', value: JSON.stringify(audioMap) });
     },
 
-    async loadFileMapFromPreferences() {
-      const { value } = await Preferences.get({ key: 'audioMap' });
+    // async loadFileMapFromPreferences() {
+    //   const { value } = await Preferences.get({ key: 'audioMap' });
+    //   if(value) {
+    //     this.audioMap = JSON.parse(value);
+    //     console.log(`RETRIEVED audiomap: ${JSON.stringify(this.audioMap, null, 2)}`);
+    //   }
+    //   const folder = await Preferences.get({ key: 'selectedFolder' });
+    //   if(folder.value) {
+    //     this.selectedFolder = folder.value;
+    //   }
+    // },
+
+    async loadPreferences() {
+      const { value } = await Preferences.get({ key: 'configState' });
       if(value) {
-        this.audioMap = JSON.parse(value);
-        console.log(`RETRIEVED audiomap: ${JSON.stringify(this.audioMap, null, 2)}`);
+        this.configState = JSON.parse(value);
+        console.log(`>!> loaded config state: ${this.configState}`);
+        return this.configState;
       }
-      const folder = await Preferences.get({ key: 'selectedFolder' });
-      if(folder.value) {
-        this.selectedFolder = folder.value;
-      }
-    },
+      this.configState = EConfigState.INITIAL;
+      return this.configState;
+    }
   },
 
   getters: {
@@ -60,8 +77,6 @@ export const useAudioStore = defineStore('audio', {
       };
     },
 
-    getSelectedFolder: (state) => { return () => { return state.selectedFolder; }},
+    getConfigState: (state) => { return () => { return state.configState; }; },
   },
-
-  // persist: true, // Optional: use a plugin to persist state to localStorage
 });

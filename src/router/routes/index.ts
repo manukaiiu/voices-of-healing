@@ -7,11 +7,11 @@ const routes: RouteRecordRaw[] = [
     redirect: ERoutes.PLAYER,
   },
   {
-    component: (): RouteComponent => import(`@/pages/SettingsPage.vue`),
-    name: ERoutes.SETTINGS,
-    path: ERoutes.SETTINGS,
+    component: (): RouteComponent => import(`@/pages/SetupPage.vue`),
+    name: ERoutes.SETUP,
+    path: ERoutes.SETUP,
     meta: {
-      headerTitle: 'Settings',
+      headerTitle: 'Setup v0.3',
       showSettingsButton: false,
       showBackButton: true,
       backRoute: ERoutes.PLAYER,

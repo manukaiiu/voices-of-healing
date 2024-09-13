@@ -11,7 +11,7 @@
 <script setup lang="ts">
   import { onMounted, ref } from 'vue';
   import Header from './components/Header.vue';
-  import { useAudioStore } from './stores/audio.store';
+  import { EConfigState, useAudioStore } from './stores/audio.store';
   import { checkStoragePermissions } from './utils/permissions';
   import { ERoutes } from './enums/route.enums';
   import { useRouter } from 'vue-router';
@@ -19,14 +19,14 @@
   const audioStore = useAudioStore();
   const appLoaded = ref(false);
   const router = useRouter();
+  const configState  = ref<EConfigState>(EConfigState.INITIAL);
 
   onMounted(async () => {
     appLoaded.value = await checkStoragePermissions();
 
-    await audioStore.loadFileMapFromPreferences();
-    const selectedFolder = audioStore.getSelectedFolder();
-    if(!selectedFolder) {
-      void router.push({ name: ERoutes.SETTINGS });
+    const configState = await audioStore.loadPreferences();
+    if(configState !== EConfigState.READY) {
+      void router.push({ name: ERoutes.SETUP });
     }
   });
 </script>

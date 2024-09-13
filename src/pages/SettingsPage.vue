@@ -53,15 +53,37 @@
   const testPath = ref<string>('');
 
   const selectFinal= () => {
-    audioStore.setSelectedFolder(testPath.value);
+    // audioStore.setSelectedFolder(testPath.value);
   }
 
   const selectTest = async () => {
+    const data = await Filesystem.readdir({
+      directory: Directory.Data,
+      path: testPath.value,
+    });
+    console.log(`data content: ${JSON.stringify(data.files.map(file => file.name), null, 2)}`);
+    const documents = await Filesystem.readdir({
+      directory: Directory.Documents,
+      path: testPath.value,
+    });
+    console.log(`documents content: ${JSON.stringify(documents.files.map(file => file.name), null, 2)}`);
+    const external = await Filesystem.readdir({
+      directory: Directory.External,
+      path: testPath.value,
+    });
+    console.log(`external content: ${JSON.stringify(external.files.map(file => file.name), null, 2)}`);
+    const lirbrary = await Filesystem.readdir({
+      directory: Directory.Library,
+      path: testPath.value,
+    });
+    console.log(`lirbrary content: ${JSON.stringify(lirbrary.files.map(file => file.name), null, 2)}`);
+
     const externalStorageContent = await Filesystem.readdir({
       directory: Directory.ExternalStorage,
       path: testPath.value,
     });
-    console.log(`first content: ${JSON.stringify(externalStorageContent.files.map(file => file.name), null, 2)}`);
+    console.log(`external storage content: ${JSON.stringify(externalStorageContent.files.map(file => file.name), null, 2)}`);
+
     folders.value = externalStorageContent.files
       .filter(element => element.type === 'directory')
       .map(folder => ({ name: folder.name }));
@@ -93,7 +115,7 @@
     const folderPath = fullPath?.slice(0, fileNameStartIndex);
     console.log(`got folder path: ${folderPath}`);
 
-    audioStore.setSelectedFolder(folderPath ?? '');
+    // audioStore.setSelectedFolder(folderPath ?? '');
 
     if(!!folderPath) {
       const files = await Filesystem.readdir({ path: folderPath });
@@ -105,7 +127,7 @@
     try {
       const uri = await FileChooser.open();
       selectedFolder.value = await getFolderPathFromUri(uri);
-      audioStore.setSelectedFolder(selectedFolder.value ?? '');
+      // audioStore.setSelectedFolder(selectedFolder.value ?? '');
       await analyzeFilesAndroid(selectedFolder.value);
     } catch (error) {
       console.error('Error selecting folder:', error);
@@ -193,11 +215,11 @@ const analyzeFilesAndroid = async (folderPath: string) => {
     console.log(`created map: `, fileMap);
 
     audioStore.setAudioFiles(fileMap);
-    audioStore.setSelectedFolder(selectedFolder.value ?? '');
+    // audioStore.setSelectedFolder(selectedFolder.value ?? '');
   };
 
   onMounted(() => {
-    selectedFolder.value = audioStore.getSelectedFolder();
+    // selectedFolder.value = audioStore.getSelectedFolder();
   });
 </script>
 
