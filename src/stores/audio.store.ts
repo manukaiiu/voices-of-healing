@@ -10,7 +10,6 @@ export interface IAudioState {
 export interface IAudioInfo {
   path: string,
   name: string,
-  fileHandle: any,
 }
 
 export const useAudioStore = defineStore('audio', {
