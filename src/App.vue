@@ -19,13 +19,13 @@
   const audioStore = useAudioStore();
   const appLoaded = ref(false);
   const router = useRouter();
-  const configState  = ref<EConfigState>(EConfigState.INITIAL);
+  const configState = ref<EConfigState>(EConfigState.INITIAL);
 
   onMounted(async () => {
     appLoaded.value = await checkStoragePermissions();
 
-    const configState = await audioStore.loadPreferences();
-    if(configState !== EConfigState.READY) {
+    configState.value = await audioStore.loadPreferences();
+    if(configState.value !== EConfigState.READY) {
       void router.push({ name: ERoutes.SETUP });
     }
   });

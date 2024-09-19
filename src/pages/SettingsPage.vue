@@ -57,38 +57,19 @@
   }
 
   const selectTest = async () => {
-    const data = await Filesystem.readdir({
-      directory: Directory.Data,
-      path: testPath.value,
-    });
-    console.log(`data content: ${JSON.stringify(data.files.map(file => file.name), null, 2)}`);
-    const documents = await Filesystem.readdir({
-      directory: Directory.Documents,
-      path: testPath.value,
-    });
-    console.log(`documents content: ${JSON.stringify(documents.files.map(file => file.name), null, 2)}`);
-    const external = await Filesystem.readdir({
-      directory: Directory.External,
-      path: testPath.value,
-    });
-    console.log(`external content: ${JSON.stringify(external.files.map(file => file.name), null, 2)}`);
-    const lirbrary = await Filesystem.readdir({
-      directory: Directory.Library,
-      path: testPath.value,
-    });
-    console.log(`lirbrary content: ${JSON.stringify(lirbrary.files.map(file => file.name), null, 2)}`);
+    try {
+      const externalStorageContent = await Filesystem.readdir({
+        directory: Directory.ExternalStorage,
+        path: testPath.value,
+      });
+      console.log(`external storage content: ${JSON.stringify(externalStorageContent.files.map(file => file.name), null, 2)}`);
 
-    const externalStorageContent = await Filesystem.readdir({
-      directory: Directory.ExternalStorage,
-      path: testPath.value,
-    });
-    console.log(`external storage content: ${JSON.stringify(externalStorageContent.files.map(file => file.name), null, 2)}`);
+      folders.value = externalStorageContent.files
+        .filter(element => element.type === 'directory')
+        .map(folder => ({ name: folder.name }));
 
-    folders.value = externalStorageContent.files
-      .filter(element => element.type === 'directory')
-      .map(folder => ({ name: folder.name }));
-
-    await analyzeFilesAndroid(testPath.value);
+      await analyzeFilesAndroid(testPath.value);
+    } catch(e) {}
   }
 
   const navigateInside = async (index: number) => {
