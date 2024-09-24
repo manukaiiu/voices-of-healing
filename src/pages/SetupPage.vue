@@ -8,7 +8,7 @@
     />
     <div v-if="!!errorMessage">Error: {{ errorMessage }}</div>
     <div v-if="configState === EConfigState.INITIAL">
-      <p>This page will help you setup the app.</p>
+      <p>7 - This page will help you setup the app.</p>
       <p>First this app will create a folder when you press the button "Create Folder".</p>
       <p>After that, you have to copy the audio files to the folder displayed.</p>
       <p>As soon as that is done, the app is should be ready to use.</p>
@@ -59,7 +59,17 @@
   const SELFCOMPASSION_DIRECTORY = 'Selfcompassion';
 
   const testSelect = async () => {
-    await TestUtils.selectTest('');
+    // console.log(`**********************************`);
+    // console.log(`>!> testing without any path`);
+    // await TestUtils.selectTestAllUsingFileSystem('');
+    // console.log(`**********************************`);
+    // console.log(`>!> testing for 'Music'`);
+    // await TestUtils.selectTestAllUsingFileSystem('Music');
+    // console.log(`**********************************`);
+    // console.log(`>!> testing for 'Documents'`);
+    // await TestUtils.selectTestAllUsingFileSystem('Documents');
+
+    await TestUtils.selectDirectoryUsingFilePicker();
   }
 
   const createFolder = async () => {

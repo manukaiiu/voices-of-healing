@@ -37,6 +37,11 @@ adb devices
 npx cap run android --target=WCR0218609003673
 adb -s WCR0218609003673  logcat Capacitor:D *:S
 
+in android studio terminal, browse to android folder and go
+- adb uninstall com.kaiiu.voicesofhealing
+- adb install app/build/outputs/apk/debug/app-debug.apk
+- adb install -r app/build/outputs/apk/debug/app-debug.apk // reinstall, without uninstall first
+
 ### Lints and fixes files
 ```
 npm run lint
