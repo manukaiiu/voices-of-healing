@@ -8,7 +8,7 @@
     />
     <div v-if="!!errorMessage">Error: {{ errorMessage }}</div>
     <div v-if="configState === EConfigState.INITIAL">
-      <p>7 - This page will help you setup the app.</p>
+      <p>8 - This page will help you setup the app.</p>
       <p>First this app will create a folder when you press the button "Create Folder".</p>
       <p>After that, you have to copy the audio files to the folder displayed.</p>
       <p>As soon as that is done, the app is should be ready to use.</p>

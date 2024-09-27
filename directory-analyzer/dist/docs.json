@@ -1,0 +1,113 @@
+{
+  "api": {
+    "name": "DirectoryAnalyzerPlugin",
+    "slug": "directoryanalyzerplugin",
+    "docs": "",
+    "tags": [],
+    "methods": [
+      {
+        "name": "listFilesInDirectory",
+        "signature": "(options: ListFilesInDirectoryOptions) => Promise<ListFilesResult>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "ListFilesInDirectoryOptions"
+          }
+        ],
+        "returns": "Promise<ListFilesResult>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "ListFilesResult",
+          "ListFilesInDirectoryOptions"
+        ],
+        "slug": "listfilesindirectory"
+      }
+    ],
+    "properties": []
+  },
+  "interfaces": [
+    {
+      "name": "ListFilesResult",
+      "slug": "listfilesresult",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "files",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "FileInfo"
+          ],
+          "type": "FileInfo[]"
+        }
+      ]
+    },
+    {
+      "name": "FileInfo",
+      "slug": "fileinfo",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "uri",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "mimeType",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "size",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number"
+        },
+        {
+          "name": "modifiedAt",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "name": "ListFilesInDirectoryOptions",
+      "slug": "listfilesindirectoryoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "directoryUri",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "typeAliases": [],
+  "pluginConfigs": []
+}

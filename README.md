@@ -49,3 +49,35 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+
+### How to create a capacitor plugin:
+- install capacitor cli with: npm install -g @capacitor/cli
+- cd to main project folder - creating plugin will create subfolder
+- run: npm init @capacitor/plugin
+- answer questions like this:
+-- npm package: <plugin-name>
+-- directory: <plugin-name>
+-- package-id: com.kaiiu.<pluginname> // no "-"
+-- class name: <PluginName>
+-- repository: <provide a github repo>
+-- author: <any string>
+-- license: <any that fits>
+-- short description: <any that fits>
+- do the coding
+-- src/defintions.ts
+-- src/web.ts // web version
+-- android/../*.java
+- rename rollup.config.js to *.mjs and update package.json
+- build with: npm run build
+- provide as tgz: npm pack
+
+## user a selfmade plugin in the app:
+- cd to project dir
+- install tgz with: npm install /path/to/<plugin>.tgz
+- sync capacitor plugins: npx cap sync
+- use in code, with import: import { PluginName } from 'plugin-name';
+
+
+
