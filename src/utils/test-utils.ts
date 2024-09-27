@@ -1,6 +1,6 @@
 import { Directory, Filesystem } from "@capacitor/filesystem";
 import { FilePicker } from "@capawesome/capacitor-file-picker";
-import { DirectoryAnalyzer } from 'directory-analyzer';
+import { DirectoryAnalyzer, FileInfo } from 'directory-analyzer';
 
 export class TestUtils {
   static async selectTestAllUsingFileSystem(testPath: string = '') {
@@ -32,14 +32,6 @@ export class TestUtils {
       if(result.files[0].path) {
         await this.listFilesInSameDirectory(result.files[0].path)
       }
-
-      // if(result.files.length > 0) {
-      //   const directoryUri = result.files[0].;
-      //   console.log('Selected directory URI:', directoryUri);
-
-      //   // Now you can access files within this directory
-      //   // You'll need to use content URIs to read files
-      // }
     } catch(err) {
       console.error('Error picking directory:', err);
     }
@@ -49,11 +41,12 @@ export class TestUtils {
   static async listFilesInSameDirectory(fileUri: string): Promise<void> {
     try {
       const result = await DirectoryAnalyzer.listFilesInDirectory({ fileUri });
-      const files = result.files;
+      const files = result.files as FileInfo[];
       console.log(`Files in directory - result: ${JSON.stringify(result)} `, files);
 
       // Filter for MP3 files
       const mp3Files = files.filter(file => file.mimeType === 'audio/mpeg');
+      console.log(`Found mp3 count: `, mp3Files.length);
 
       // Store or process the mp3Files as needed
     } catch(err) {

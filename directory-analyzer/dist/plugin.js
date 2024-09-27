@@ -25,6 +25,8 @@ var capacitorDirectoryAnalyzer = (function (exports, core) {
 
     exports.DirectoryAnalyzer = DirectoryAnalyzer;
 
+    Object.defineProperty(exports, '__esModule', { value: true });
+
     return exports;
 
 })({}, capacitorExports);

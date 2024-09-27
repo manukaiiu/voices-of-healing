@@ -2,7 +2,7 @@ export interface DirectoryAnalyzerPlugin {
     listFilesInDirectory(options: ListFilesInDirectoryOptions): Promise<ListFilesResult>;
 }
 export interface ListFilesInDirectoryOptions {
-    directoryUri: string;
+    fileUri: string;
 }
 export interface ListFilesResult {
     files: FileInfo[];

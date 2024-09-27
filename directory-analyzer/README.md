@@ -59,8 +59,8 @@ listFilesInDirectory(options: ListFilesInDirectoryOptions) => Promise<ListFilesR
 
 #### ListFilesInDirectoryOptions
 
-| Prop               | Type                |
-| ------------------ | ------------------- |
-| **`directoryUri`** | <code>string</code> |
+| Prop          | Type                |
+| ------------- | ------------------- |
+| **`fileUri`** | <code>string</code> |
 
 </docgen-api>

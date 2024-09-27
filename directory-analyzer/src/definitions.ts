@@ -3,7 +3,7 @@ export interface DirectoryAnalyzerPlugin {
 }
 
 export interface ListFilesInDirectoryOptions {
-  directoryUri: string;
+  fileUri: string;
 }
 
 export interface ListFilesResult {

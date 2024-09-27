@@ -1,6 +1,6 @@
 {
   "name": "directory-analyzer",
-  "version": "0.0.1",
+  "version": "0.0.8",
   "description": "Analyse the content of a directory.",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

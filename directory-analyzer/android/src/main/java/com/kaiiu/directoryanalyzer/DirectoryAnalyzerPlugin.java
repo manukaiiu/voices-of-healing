@@ -25,7 +25,7 @@ public class DirectoryAnalyzerPlugin extends Plugin {
 
     try {
       Uri fileUri = Uri.parse(fileUriStr);
-      JSArray files = implementation.listFiles(fileUri);
+      JSArray files = implementation.listFiles(fileUri, getContext());
 
       JSObject ret = new JSObject();
       ret.put("files", files);

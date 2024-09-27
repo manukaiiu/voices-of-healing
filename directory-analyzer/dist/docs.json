@@ -98,7 +98,7 @@
       "methods": [],
       "properties": [
         {
-          "name": "directoryUri",
+          "name": "fileUri",
           "tags": [],
           "docs": "",
           "complexTypes": [],
