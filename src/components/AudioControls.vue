@@ -50,104 +50,91 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, watch, computed, onMounted } from 'vue';
+  import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
   import IconButton from './buttons/IconButton.vue';
+  import { DirectoryAnalyzer } from 'directory-analyzer';
 
-  // Props for audio file path
+  // Props for audio file URI
   const props = defineProps<{
-    audioFilePath: string | null;
+    audioFileUri: string | null;
   }>();
 
   // State management
   const isPlaying = ref(false);
   const currentTime = ref(0);
   const audioDuration = ref(0);
-  const showStop = ref(false);
-  let audioFile: HTMLAudioElement | null = null; // Web audio element
+  let positionInterval: ReturnType<typeof setInterval> | null = null;
 
-  // Load the audio file when the component is mounted or when the file path changes
-  const loadAudioFile = () => {
-    if (props.audioFilePath) {
-      if (audioFile) {
-        audioFile.pause(); // Pause previous audio before loading new one
+  // Load the audio file when the component is mounted or when the file URI changes
+  const loadAudioFile = async () => {
+    if (props.audioFileUri) {
+      try {
+        await DirectoryAnalyzer.loadAudio({ uri: props.audioFileUri });
+        const durationResult = await DirectoryAnalyzer.getDuration();
+        audioDuration.value = durationResult.duration;
+
+        // Start updating the current position
+        if (positionInterval) {
+          clearInterval(positionInterval);
+        }
+        positionInterval = setInterval(async () => {
+          const positionResult = await DirectoryAnalyzer.getCurrentPosition();
+          currentTime.value = positionResult.position;
+        }, 500); // Update every 500ms
+      } catch (error) {
+        console.error('Error loading audio file:', error);
       }
-
-      // Load the new audio file for web
-      audioFile = new Audio(props.audioFilePath);
-      console.log(`got audio file: `, audioFile);
-      audioFile.addEventListener('loadedmetadata', () => {
-        audioDuration.value = audioFile?.duration || 0;
-      });
-
-      // Update current time as the audio plays
-      audioFile.addEventListener('timeupdate', () => {
-        currentTime.value = audioFile?.currentTime || 0;
-        // showStop.value = !!audioFile?.currentTime && audioFile.currentTime > 0;
-
-        if(audioFile?.duration
-          && currentTime.value >= audioFile?.duration) stopAudio();
-      });
     }
   };
 
-  const togglePlay = () => {
-    if (audioFile) {
-      if (isPlaying.value) {
-        audioFile.pause();
-      } else {
-        audioFile.play();
-      }
-      isPlaying.value = !isPlaying.value;
+  const togglePlay = async () => {
+    if (isPlaying.value) {
+      await DirectoryAnalyzer.pauseAudio();
+    } else {
+      await DirectoryAnalyzer.playAudio();
     }
+    isPlaying.value = !isPlaying.value;
   };
 
-  const stopAudio = () => {
-    console.log(`stopping audio`);
-    if(audioFile) {
-      audioFile.pause();
-      audioFile.currentTime = 0;
-      isPlaying.value = false;
-    }
+  const stopAudio = async () => {
+    await DirectoryAnalyzer.stopAudio();
+    isPlaying.value = false;
+    currentTime.value = 0;
   };
 
-  // Skip 5 seconds forward
-  const skipForward = () => {
-    if(audioFile) {
-      audioFile.currentTime = Math.min(audioFile.currentTime + 5, audioDuration.value);
-    }
+  const skipForward = async () => {
+    await DirectoryAnalyzer.skipForward({ milliseconds: 5000 });
   };
 
-  // Skip 5 seconds backward
-  const skipBackward = () => {
-    if(audioFile) {
-      audioFile.currentTime = Math.max(audioFile.currentTime - 5, 0);
-    }
+  const skipBackward = async () => {
+    await DirectoryAnalyzer.skipBackward({ milliseconds: 5000 });
   };
 
-  // Seek to the selected position
-  const seek = (event: Event) => {
+  const seek = async (event: Event) => {
     const target = event.target as HTMLInputElement;
-    if(audioFile) {
-      audioFile.currentTime = parseFloat(target.value);
-    }
+    const position = parseInt(target.value, 10);
+    await DirectoryAnalyzer.seekAudio({ position });
+    currentTime.value = position;
   };
 
-  // Watch for changes in the audioFilePath prop and load the audio
-  watch(() => props.audioFilePath, loadAudioFile);
+  watch(() => props.audioFileUri, loadAudioFile);
 
-  // Format time as mm:ss
+  onMounted(loadAudioFile);
+
+  onUnmounted(() => {
+    if (positionInterval) {
+      clearInterval(positionInterval);
+    }
+  });
+
   const formatTime = (time: number): string => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+    const minutes = Math.floor(time / 60000);
+    const seconds = Math.floor((time % 60000) / 1000).toString().padStart(2, '0');
     return `${minutes}:${seconds}`;
   };
 
-  // Computed formatted times for display
   const formattedCurrentTime = computed(() => formatTime(currentTime.value));
   const formattedDuration = computed(() => formatTime(audioDuration.value));
-
-  // On mounted hook to load audio if the path is already set
-  onMounted(loadAudioFile);
 </script>
 
 <style scoped lang="scss">

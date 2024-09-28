@@ -53,9 +53,9 @@
   const showTodayButton = computed(() => {
     console.log(`today is: ${todayDate.value}`);
     console.log(`current date is: ${currentDate.value}`);
-    console.log(`thus display button = ${todayDate.value.getFullYear() !== currentDate.value.getFullYear() ||
-           todayDate.value.getMonth() !== currentDate.value.getMonth() ||
-           todayDate.value.getDate() !== currentDate.value.getDate()}`);
+    console.log(`thus display button = ${todayDate.value.getFullYear() !== currentDate.value.getFullYear()
+      || todayDate.value.getMonth() !== currentDate.value.getMonth()
+      || todayDate.value.getDate() !== currentDate.value.getDate()}`);
     return todayDate.value.getFullYear() !== currentDate.value.getFullYear() ||
            todayDate.value.getMonth() !== currentDate.value.getMonth() ||
            todayDate.value.getDate() !== currentDate.value.getDate();
@@ -77,19 +77,14 @@
   };
 
   const selectAudioForDate = (desiredDate: Date): void => {
-    const audioStoreEntry = audioStore.getAudioFileNameByDate(desiredDate);
-    currentAudioFilePath.value = audioStoreEntry.filePath;
+    const audioStoreEntry = audioStore.getAudioByDate(desiredDate);
+    currentAudioFilePath.value = audioStoreEntry.fileUri;
     audioDate.value = audioStoreEntry.formattedDate;
     console.log(`Audio Player working with filepath: ${currentAudioFilePath.value}`);
   }
 
   onMounted(() => {
-    // const selectedFolder = audioStore.getSelectedFolder();
-    // if(!selectedFolder) {
-    //   void router.push({ name: ERoutes.SETUP });
-    // }
-
-    // selectAudioForDate(new Date());
+    selectAudioForDate(new Date());
   });
 </script>
 

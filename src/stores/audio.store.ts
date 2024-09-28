@@ -10,13 +10,15 @@ export enum EConfigState {
 
 export interface IAudioState {
   configState: EConfigState,
-  audioMap: Record<string, IAudioInfo>;
+  audioMap: TAudioMap;
 }
 
 export interface IAudioInfo {
-  path: string,
   name: string,
+  fileUri: string,
 }
+
+export type TAudioMap = Record<string, IAudioInfo>;
 
 export const useAudioStore = defineStore('audio', {
   state: (): IAudioState => ({
@@ -25,44 +27,48 @@ export const useAudioStore = defineStore('audio', {
   }),
 
   actions: {
+    async resetStore() {
+      this.configState = EConfigState.INITIAL;
+      this.audioMap = {};
+      await Preferences.set({ key: 'configState', value: this.configState });
+      await Preferences.set({ key: 'audioMap', value: JSON.stringify({}) });
+    },
+
     async setConfigState(configState: EConfigState) {
       this.configState = configState;
       await Preferences.set({ key: 'configState', value: configState });
     },
 
-    async setAudioFiles(audioMap: Record<string, IAudioInfo>) {
+    async setAudioFiles(audioMap: TAudioMap) {
       this.audioMap = audioMap;
       console.log(`STORING audiomap: ${JSON.stringify(audioMap, null, 2)}`);
       await Preferences.set({ key: 'audioMap', value: JSON.stringify(audioMap) });
     },
 
-    // async loadFileMapFromPreferences() {
-    //   const { value } = await Preferences.get({ key: 'audioMap' });
-    //   if(value) {
-    //     this.audioMap = JSON.parse(value);
-    //     console.log(`RETRIEVED audiomap: ${JSON.stringify(this.audioMap, null, 2)}`);
-    //   }
-    //   const folder = await Preferences.get({ key: 'selectedFolder' });
-    //   if(folder.value) {
-    //     this.selectedFolder = folder.value;
-    //   }
-    // },
-
-    async loadPreferences() {
-      const { value } = await Preferences.get({ key: 'configState' });
-      if(value) {
-        this.configState = JSON.parse(value);
+    async loadPreferences(): Promise<EConfigState> {
+      console.log(`AUDIO STORE > loading preferences`);
+      const { value: state } = await Preferences.get({ key: 'configState' });
+      const { value: audioMap } = await Preferences.get({ key: 'audioMap' });
+      if(state && audioMap) {
+        this.configState = JSON.parse(state);
         console.log(`>!> loaded config state: ${this.configState}`);
+        this.audioMap = JSON.parse(audioMap);
+        console.log(`>!> loaded audio map: `, this.audioMap);
+        console.log(`AUDIO STORE > loading preferences DONE`);
         return this.configState;
       }
       this.configState = EConfigState.INITIAL;
+      this.audioMap = {};
+      console.log(`AUDIO STORE > loading empty preferences DONE`);
       return this.configState;
     }
   },
 
   getters: {
-    getAudioFileNameByDate: (state) => {
-      return (searchDate: Date): { filePath: string, formattedDate: string } => {
+    getConfigState: (state) => { return () => { return state.configState; }; },
+
+    getAudioByDate: (state) => {
+      return (searchDate: Date): { fileUri: string, formattedDate: string } => {
         const month = (searchDate.getMonth() + 1).toString().padStart(2, '0');
         const day = searchDate.getDate().toString().padStart(2, '0');
         const dateKey = `${month}-${day}`;
@@ -70,13 +76,10 @@ export const useAudioStore = defineStore('audio', {
         console.log(`Retrieving audio file name for date "${searchDate}" with key "${dateKey}" => ${state.audioMap[dateKey]}`);
 
         return {
-          // filePath: `${state.selectedFolder}/${state.audioMap[dateKey]}`,
-          filePath: state.audioMap[dateKey].path ?? '',
+          fileUri: state.audioMap[dateKey].fileUri ?? '',
           formattedDate: formatFilenameToDateString(state.audioMap[dateKey].name ?? ''),
         }
       };
     },
-
-    getConfigState: (state) => { return () => { return state.configState; }; },
   },
 });

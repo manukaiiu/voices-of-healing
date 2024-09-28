@@ -2,7 +2,6 @@ package com.kaiiu.directoryanalyzer;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.DocumentsContract;
 import android.util.Log;
@@ -12,19 +11,24 @@ import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 
 public class DirectoryAnalyzer {
+  private Context context;
   private static final String TAG = "DirectoryAnalyzer";
 
-  // Method to list files in a directory
-  public JSArray listFiles(Uri fileUri, Context context) throws Exception {
+  public DirectoryAnalyzer(Context context) {
+    this.context = context;
+  }
 
-    Uri directoryUri = getParentDirectoryUri(fileUri);
-    Log.d(TAG, "Calculated directoryUri: " + directoryUri.toString());
+  public JSArray listFilesInDirectory(Uri directoryUri) throws Exception {
+    Log.d(TAG, "Listing files in directoryUri (Tree URI): " + directoryUri.toString());
 
     ContentResolver contentResolver = context.getContentResolver();
 
+    String directoryDocumentId = DocumentsContract.getTreeDocumentId(directoryUri);
+    Log.d(TAG, "Directory Document ID: " + directoryDocumentId);
+
     Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(
       directoryUri,
-      DocumentsContract.getTreeDocumentId(directoryUri)
+      directoryDocumentId
     );
     Log.d(TAG, "Children URI: " + childrenUri.toString());
 
@@ -51,13 +55,13 @@ public class DirectoryAnalyzer {
           long size = cursor.getLong(3);
           long lastModified = cursor.getLong(4);
 
-          Uri singleFileUri = DocumentsContract.buildDocumentUriUsingTree(
+          Uri childUri = DocumentsContract.buildDocumentUriUsingTree(
             directoryUri,
             documentId
           );
 
           JSObject fileObj = new JSObject();
-          fileObj.put("uri", singleFileUri.toString());
+          fileObj.put("uri", childUri.toString());
           fileObj.put("name", displayName);
           fileObj.put("mimeType", mimeType);
           fileObj.put("size", size);
@@ -65,7 +69,6 @@ public class DirectoryAnalyzer {
 
           fileList.put(fileObj);
         }
-
       } else {
         Log.e(TAG, "Cursor is null. Could not query children URIs.");
       }
@@ -74,52 +77,6 @@ public class DirectoryAnalyzer {
       throw e;
     }
 
-    Log.e(TAG, "All done, returning fileList");
     return fileList;
   }
-
-  // TODO fix and make get Parent Dir code right
-  private Uri getParentDirectoryUri(Uri fileUri) {
-    Log.d(TAG, "Getting parent directory for fileUri: " + fileUri.toString());
-    String documentId = DocumentsContract.getDocumentId(fileUri);
-    Log.d(TAG, "Document ID: " + documentId);
-
-    String[] parts = documentId.split(":");
-    String path = parts.length > 1 ? parts[1] : "";
-    Log.d(TAG, "Path: " + path);
-    int lastSlash = path.lastIndexOf('/');
-
-    String parentDocumentId;
-    if (lastSlash != -1) {
-        String parentPath = path.substring(0, lastSlash);
-        parentDocumentId = parts[0] + ":" + parentPath;
-        Log.d(TAG, "Parent Document ID: " + parentDocumentId);
-    } else {
-        // Root directory
-        parentDocumentId = parts[0] + ":";
-        Log.d(TAG, "Root Document ID (storage root): " + parentDocumentId);
-    }
-
-    Uri parentUri = DocumentsContract.buildTreeDocumentUri(
-        fileUri.getAuthority(),
-        parentDocumentId
-    );
-    Log.d(TAG, "Parent Tree URI: " + parentUri.toString());
-
-    return parentUri;
-
-    // if (lastSlash != -1) {
-    //   String parentPath = path.substring(0, lastSlash);
-    //   String parentDocumentId = parts[0] + ":" + parentPath;
-    //   Log.d(TAG, "Parent Document ID: " + parentDocumentId);
-
-    //   return DocumentsContract.buildDocumentUriUsingTree(fileUri, parentDocumentId);
-    // } else {
-    //   // Root directory
-    //   Log.d(TAG, "Run DocumentsContract.buildTreeDocumentUri to finde root directory.");
-    //   return DocumentsContract.buildTreeDocumentUri(fileUri.getAuthority(), parts[0] + ":");
-    // }
-  }
 }
-
-

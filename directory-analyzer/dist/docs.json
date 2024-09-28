@@ -23,6 +23,132 @@
           "ListFilesInDirectoryOptions"
         ],
         "slug": "listfilesindirectory"
+      },
+      {
+        "name": "selectDirectory",
+        "signature": "() => Promise<SelectDirectoryResult>",
+        "parameters": [],
+        "returns": "Promise<SelectDirectoryResult>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "SelectDirectoryResult"
+        ],
+        "slug": "selectdirectory"
+      },
+      {
+        "name": "loadAudio",
+        "signature": "(options: { uri: string; }) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ uri: string; }"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "loadaudio"
+      },
+      {
+        "name": "playAudio",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "playaudio"
+      },
+      {
+        "name": "pauseAudio",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "pauseaudio"
+      },
+      {
+        "name": "stopAudio",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "stopaudio"
+      },
+      {
+        "name": "seekAudio",
+        "signature": "(options: { position: number; }) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ position: number; }"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "seekaudio"
+      },
+      {
+        "name": "skipForward",
+        "signature": "(options: { milliseconds?: number; }) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ milliseconds?: number | undefined; }"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "skipforward"
+      },
+      {
+        "name": "skipBackward",
+        "signature": "(options: { milliseconds?: number; }) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ milliseconds?: number | undefined; }"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "skipbackward"
+      },
+      {
+        "name": "getCurrentPosition",
+        "signature": "() => Promise<{ position: number; }>",
+        "parameters": [],
+        "returns": "Promise<{ position: number; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "getcurrentposition"
+      },
+      {
+        "name": "getDuration",
+        "signature": "() => Promise<{ duration: number; }>",
+        "parameters": [],
+        "returns": "Promise<{ duration: number; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "getduration"
       }
     ],
     "properties": []
@@ -98,7 +224,23 @@
       "methods": [],
       "properties": [
         {
-          "name": "fileUri",
+          "name": "directoryUri",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "SelectDirectoryResult",
+      "slug": "selectdirectoryresult",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "directoryUri",
           "tags": [],
           "docs": "",
           "complexTypes": [],

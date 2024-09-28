@@ -1,115 +1,90 @@
 <template>
   <div class="setup-page">
-    <TextButton
-      class="text-button"
-      text="Test Select"
-      :width-mode="EButtonWidthMode.WIDE"
-      @click="testSelect"
-    />
+    <div>
+      <span>Setup status: </span>
+      <span v-if="configState === EConfigState.INITIAL">... please select folder 📁</span>
+      <span v-if="configState === EConfigState.SETUP">⚙️ app setup is running ...</span>
+      <span v-if="configState === EConfigState.READY">folder selected, all ready ❤️</span>
+    </div>
+
     <div v-if="!!errorMessage">Error: {{ errorMessage }}</div>
     <div v-if="configState === EConfigState.INITIAL">
-      <p>11 - This page will help you setup the app.</p>
-      <p>First this app will create a folder when you press the button "Create Folder".</p>
-      <p>After that, you have to copy the audio files to the folder displayed.</p>
-      <p>As soon as that is done, the app is should be ready to use.</p>
-      <p>Checkin back on this page to see the status anytime.</p>
+      <p>This page will help you setup the app.</p>
+      <p>Press the button "select Folder" and pick the folder where your Selfcompassion Audios are stored.</p>
+      <p>Please make sure to provide the required permissions to the app when prompted.</p>
+      <p>Checkin back on this page to see the status anytime and pick another folder if you like.</p>
+    </div>
+
+    <TextButton
+      class="setup-page__text-button"
+      text="Select Folder"
+      :width-mode="EButtonWidthMode.WIDE"
+      @click="selectFolder"
+    />
+
+    <div v-if="configState !== EConfigState.INITIAL"
+      class="setup-page__reset-section">
+      <p>Any troubles? Try resetting the app and start fresh:</p>
       <TextButton
-        class="text-button"
-        text="Create Folder"
+        class="setup-page__text-button"
+        text="Reset App"
         :width-mode="EButtonWidthMode.WIDE"
-        @click="createFolder"
+        @click="resetStore"
       />
-    </div>
-
-    <div v-if="configState !== EConfigState.INITIAL">
-      <p>Folder ready: "VoicesOfHealing/Selfcompassion"</p>
-    </div>
-
-    <div v-if="configState === EConfigState.SETUP">
-      <p>Please continue by copying the audio files into this folder.</p>
-      <p>When you are done, you can just start the app again. Or press this button:</p>
-      <TextButton
-        class="text-button"
-        text="Create Folder"
-        :width-mode="EButtonWidthMode.WIDE"
-        @click="scanForAudios"
-      />
-    </div>
-
-    <div v-if="configState === EConfigState.READY">
-      <p>All done! The app should be ready to use.</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { EConfigState, useAudioStore } from '@/stores/audio.store';
-  import { onMounted, ref } from 'vue';
-  import TextButton from '../components/buttons/TextButton.vue'
   import { EButtonWidthMode } from '@/enums/button.enums';
-  import { Directory, Filesystem } from '@capacitor/filesystem';
-  import { FilesystemUtils } from '@/utils/filesystem-utils';
-  import { TestUtils } from '@/utils/test-utils';
+  import { EConfigState,TAudioMap,useAudioStore } from '@/stores/audio.store';
+  import { ISetupInfos, SetupUtils } from '@/utils/setup-utils';
+  import { onMounted,ref } from 'vue';
+  import TextButton from '../components/buttons/TextButton.vue';
 
   const audioStore = useAudioStore();
   const configState = ref<EConfigState>(EConfigState.INITIAL);
   const errorMessage = ref<string>('');
-  const BASE_DIRECTORY = Directory.Documents;
-  const APP_MEDIA_DIRECTORY = 'VoicesOfHealing';
-  const SELFCOMPASSION_DIRECTORY = 'Selfcompassion';
 
-  const testSelect = async () => {
-    // console.log(`**********************************`);
-    // console.log(`>!> testing without any path`);
-    // await TestUtils.selectTestAllUsingFileSystem('');
-    // console.log(`**********************************`);
-    // console.log(`>!> testing for 'Music'`);
-    // await TestUtils.selectTestAllUsingFileSystem('Music');
-    // console.log(`**********************************`);
-    // console.log(`>!> testing for 'Documents'`);
-    // await TestUtils.selectTestAllUsingFileSystem('Documents');
-
-    await TestUtils.selectDirectoryUsingFilePicker();
+  const selectFolder = async () => {
+    const setupInfo = await SetupUtils.selectDirectoryAndProcessAudios();
+    await setupStore(setupInfo);
   }
 
-  const createFolder = async () => {
-    let steps = 0;
-    try {
-      await Filesystem.mkdir({
-        path: APP_MEDIA_DIRECTORY,
-        directory: BASE_DIRECTORY,
-      });
-      errorMessage.value = '';
-      steps++;
-    } catch(e) {
-      errorMessage.value = JSON.stringify(e);
-    }
-
-    if(steps === 1) {
-      try {
-        await Filesystem.mkdir({
-          path: APP_MEDIA_DIRECTORY + '/' + SELFCOMPASSION_DIRECTORY,
-          directory: BASE_DIRECTORY,
-        });
-        errorMessage.value = '';
-        steps++;
-      } catch(e) {
-        errorMessage.value = JSON.stringify(e);
+  const setupStore = async (setupInfo: ISetupInfos) => {
+    const audioMap: TAudioMap = {};
+    for(const audioInfo of setupInfo.audioInfos) {
+      const dateKey = extractDateKey(audioInfo.name);
+      if(dateKey) {
+        audioMap[dateKey] = audioInfo;
+      } else {
+        console.warn(`Couldn't extract dateKey for audio: ${JSON.stringify(audioInfo, null, 2)}`);
       }
     }
+    await audioStore.setAudioFiles(audioMap);
+    await audioStore.setConfigState(setupInfo.configState);
+    console.log(`audio store setup done -> continue to state: `)
+    configState.value = setupInfo.configState;
+  }
 
-    if(steps === 2) {
-      await audioStore.setConfigState(EConfigState.SETUP);
-      configState.value = EConfigState.SETUP;
+  const resetStore = async () => {
+    await audioStore.resetStore();
+  }
+
+  const extractDateKey = (filename: string): string => {
+    const nameWithoutExtension = filename.replace(/\.[^/.]+$/, "");
+    const match = nameWithoutExtension.match(/ - (\d{2}-\d{2})$/);
+    if (match) {
+      return match[1];
+    } else {
+      return '';
     }
-  };
-
-  const scanForAudios = async () => {
-    configState.value = await FilesystemUtils.scanAndProcessAudios();
-  };
+  }
 
   onMounted(() => {
+    console.log(`SETUP > initial state: ${configState.value}`);
     configState.value = audioStore.getConfigState();
+    console.log(`SETUP > retrieved state: ${configState.value}`);
   });
 </script>
 
@@ -121,9 +96,13 @@
     flex-direction: column;
     background-color: var(--color-page-bg);
     height: 100%;
-  }
 
-  .text-button {
-    margin-top: 40px;
+    &__text-button {
+      margin-top: 40px;
+    }
+
+    &__reset-section {
+      margin-top: 72px;
+    }
   }
 </style>
