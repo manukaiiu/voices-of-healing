@@ -12,6 +12,7 @@ import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 
 public class DirectoryAnalyzer {
+  private static final String TAG = "DirectoryAnalyzer";
 
   // Method to list files in a directory
   public JSArray listFiles(Uri fileUri, Context context) throws Exception {
@@ -73,6 +74,7 @@ public class DirectoryAnalyzer {
       throw e;
     }
 
+    Log.e(TAG, "All done, returning fileList");
     return fileList;
   }
 
@@ -84,18 +86,39 @@ public class DirectoryAnalyzer {
 
     String[] parts = documentId.split(":");
     String path = parts.length > 1 ? parts[1] : "";
+    Log.d(TAG, "Path: " + path);
     int lastSlash = path.lastIndexOf('/');
 
+    String parentDocumentId;
     if (lastSlash != -1) {
-      String parentPath = path.substring(0, lastSlash);
-      String parentDocumentId = parts[0] + ":" + parentPath;
-      Log.d(TAG, "Parent Document ID: " + parentDocumentId);
-
-      return DocumentsContract.buildDocumentUriUsingTree(fileUri, parentDocumentId);
+        String parentPath = path.substring(0, lastSlash);
+        parentDocumentId = parts[0] + ":" + parentPath;
+        Log.d(TAG, "Parent Document ID: " + parentDocumentId);
     } else {
-      // Root directory
-      return DocumentsContract.buildTreeDocumentUri(fileUri.getAuthority(), parts[0] + ":");
+        // Root directory
+        parentDocumentId = parts[0] + ":";
+        Log.d(TAG, "Root Document ID (storage root): " + parentDocumentId);
     }
+
+    Uri parentUri = DocumentsContract.buildTreeDocumentUri(
+        fileUri.getAuthority(),
+        parentDocumentId
+    );
+    Log.d(TAG, "Parent Tree URI: " + parentUri.toString());
+
+    return parentUri;
+
+    // if (lastSlash != -1) {
+    //   String parentPath = path.substring(0, lastSlash);
+    //   String parentDocumentId = parts[0] + ":" + parentPath;
+    //   Log.d(TAG, "Parent Document ID: " + parentDocumentId);
+
+    //   return DocumentsContract.buildDocumentUriUsingTree(fileUri, parentDocumentId);
+    // } else {
+    //   // Root directory
+    //   Log.d(TAG, "Run DocumentsContract.buildTreeDocumentUri to finde root directory.");
+    //   return DocumentsContract.buildTreeDocumentUri(fileUri.getAuthority(), parts[0] + ":");
+    // }
   }
 }
 
