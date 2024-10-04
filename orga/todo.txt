@@ -1,9 +1,6 @@
-* change day > reset position in audio
-* test "back to today"
-* style progress bar nicer
 * change app icon
-* do some code cleanup
 
 nice to have:
 * loading spinner for settings (but it just takes 0.3 seconds, no no issue...)
 * add date-picker to go to different dates
+* finetuning progress bar style

@@ -21,7 +21,7 @@
         <TextButton
           v-if="showTodayButton"
           class="today"
-          text="Today"
+          text="Back to Today"
           :width-mode="EButtonWidthMode.SLIM"
           @click="jumpToToday"/>
       </div>
@@ -36,11 +36,9 @@
   import { useAudioStore } from '@/stores/audio.store';
   import IconButton from '@/components/buttons/IconButton.vue';
   import { EButtonWidthMode } from '@/enums/button.enums';
-  import { useRouter } from 'vue-router';
-  import { ERoutes } from '@/enums/route.enums';
+  import TextButton from '../components/buttons/TextButton.vue';
 
   const audioStore = useAudioStore();
-  const router = useRouter();
 
   // Logic to fetch current audio, title, and date based on today's date
   const audioTitle = ref('Selfcompassion');
@@ -51,11 +49,6 @@
   const currentAudioFileUri = ref<string | null>(null);
 
   const showTodayButton = computed(() => {
-    console.log(`today is: ${todayDate.value}`);
-    console.log(`current date is: ${currentDate.value}`);
-    console.log(`thus display button = ${todayDate.value.getFullYear() !== currentDate.value.getFullYear()
-      || todayDate.value.getMonth() !== currentDate.value.getMonth()
-      || todayDate.value.getDate() !== currentDate.value.getDate()}`);
     return todayDate.value.getFullYear() !== currentDate.value.getFullYear() ||
            todayDate.value.getMonth() !== currentDate.value.getMonth() ||
            todayDate.value.getDate() !== currentDate.value.getDate();
@@ -65,11 +58,13 @@
     currentDate.value = new Date(todayDate.value);
     selectAudioForDate(todayDate.value);
   }
+
   const previousDay = () => {
     currentDate.value = new Date(currentDate.value
       .setDate(currentDate.value.getDate() - 1));
     selectAudioForDate(currentDate.value);
   };
+
   const nextDay = () => {
     currentDate.value = new Date(currentDate.value
       .setDate(currentDate.value.getDate() + 1));
@@ -77,11 +72,9 @@
   };
 
   const selectAudioForDate = (desiredDate: Date): void => {
-    console.log(`>!> Audio Player: trying to select audio for Date: ${desiredDate}`);
     const audioStoreEntry = audioStore.getAudioByDate(desiredDate);
     currentAudioFileUri.value = audioStoreEntry.fileUri;
     audioDate.value = audioStoreEntry.formattedDate;
-    console.log(`>!> Audio Player working with filepath: ${currentAudioFileUri.value}`);
   }
 
   onMounted(() => {
@@ -115,6 +108,10 @@
     grid-template-areas: "previous current next";
   }
 
+  .date-control-bottom-row {
+    height: 32px;
+  }
+
   .previous-day {
     grid-area: previous;
   }
@@ -122,7 +119,6 @@
   .today {
     grid-area: current;
     align-self: center;
-    padding-top: 2px;
   }
 
   .next-day {
