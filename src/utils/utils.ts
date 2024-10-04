@@ -12,11 +12,9 @@ export function formatFilenameToDateString(filename: string): string {
     date.setMonth(month - 1); // `setMonth` is zero-indexed, so subtract 1
     date.setDate(day);
 
-    // Format the date string (e.g., "September 11th")
     const options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' };
     return new Intl.DateTimeFormat('en-US', options).format(date);
   }
 
-  // Return null if no match was found
   return '';
 }

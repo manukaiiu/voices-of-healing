@@ -7,76 +7,78 @@ import android.media.MediaPlayer;
 import java.io.IOException;
 
 public class AudioPlayer {
-    private Context context;
-    private MediaPlayer mediaPlayer;
-    private static final String TAG = "AudioPlayer";
+  private Context context;
+  private MediaPlayer mediaPlayer;
+  private static final String TAG = "AudioPlayer";
 
-    public AudioPlayer(Context context) {
-        this.context = context;
+  public AudioPlayer(Context context) {
+    this.context = context;
+  }
+
+  public void load(Uri audioUri) throws IOException {
+    release();
+    mediaPlayer = new MediaPlayer();
+    mediaPlayer.setDataSource(context, audioUri);
+    mediaPlayer.prepare();
+    mediaPlayer.seekTo(0);
+  }
+
+  public void play() {
+    if (mediaPlayer != null) {
+      mediaPlayer.start();
     }
+  }
 
-    public void load(Uri audioUri) throws IOException {
-        release(); // Release any existing MediaPlayer
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setDataSource(context, audioUri);
+  public void pause() {
+    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+      mediaPlayer.pause();
+    }
+  }
+
+  public void stop() {
+    if (mediaPlayer != null) {
+      mediaPlayer.stop();
+      try {
         mediaPlayer.prepare();
+        mediaPlayer.seekTo(0);
+      } catch (IOException e) {
+        Log.e(TAG, "Error preparing MediaPlayer after stop", e);
+      }
     }
+  }
 
-    public void play() {
-        if (mediaPlayer != null) {
-            mediaPlayer.start();
-        }
+  public void seekTo(int milliseconds) {
+    if (mediaPlayer != null) {
+      mediaPlayer.seekTo(milliseconds);
     }
+  }
 
-    public void pause() {
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-        }
-    }
+  public int getCurrentPosition() {
+    return mediaPlayer != null ? mediaPlayer.getCurrentPosition() : 0;
+  }
 
-    public void stop() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            try {
-                mediaPlayer.prepare(); // Prepare again for next play
-            } catch (IOException e) {
-                Log.e(TAG, "Error preparing MediaPlayer after stop", e);
-            }
-        }
-    }
+  public int getDuration() {
+    return mediaPlayer != null ? mediaPlayer.getDuration() : 0;
+  }
 
-    public void seekTo(int milliseconds) {
-        if (mediaPlayer != null) {
-            mediaPlayer.seekTo(milliseconds);
-        }
+  public void skipForward(int milliseconds) {
+    if (mediaPlayer != null) {
+      int newPosition = mediaPlayer.getCurrentPosition() + milliseconds;
+      mediaPlayer.seekTo(Math.min(newPosition, mediaPlayer.getDuration()));
     }
+  }
 
-    public int getCurrentPosition() {
-        return mediaPlayer != null ? mediaPlayer.getCurrentPosition() : 0;
+  public void skipBackward(int milliseconds) {
+    if (mediaPlayer != null) {
+      int newPosition = mediaPlayer.getCurrentPosition() - milliseconds;
+      mediaPlayer.seekTo(Math.max(newPosition, 0));
     }
+  }
 
-    public int getDuration() {
-        return mediaPlayer != null ? mediaPlayer.getDuration() : 0;
+  public void release() {
+    if (mediaPlayer != null) {
+      mediaPlayer.release();
+      mediaPlayer = null;
     }
-
-    public void skipForward(int milliseconds) {
-        if (mediaPlayer != null) {
-            int newPosition = mediaPlayer.getCurrentPosition() + milliseconds;
-            mediaPlayer.seekTo(Math.min(newPosition, mediaPlayer.getDuration()));
-        }
-    }
-
-    public void skipBackward(int milliseconds) {
-        if (mediaPlayer != null) {
-            int newPosition = mediaPlayer.getCurrentPosition() - milliseconds;
-            mediaPlayer.seekTo(Math.max(newPosition, 0));
-        }
-    }
-
-    public void release() {
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-    }
+  }
 }

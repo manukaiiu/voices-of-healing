@@ -1,37 +1,40 @@
 <template>
   <div class="setup-page">
-    <div>
-      <span>Setup status: </span>
-      <span v-if="configState === EConfigState.INITIAL">... please select folder 📁</span>
-      <span v-if="configState === EConfigState.SETUP">⚙️ app setup is running ...</span>
-      <span v-if="configState === EConfigState.READY">folder selected, all ready ❤️</span>
-    </div>
+    <div class="setup-page__main-content">
+      <div>
+        <span>Setup status: </span>
+        <span v-if="configState === EConfigState.INITIAL">... please select folder 📁</span>
+        <span v-if="configState === EConfigState.SETUP">⚙️ app setup is running ...</span>
+        <span v-if="configState === EConfigState.READY">folder selected, all ready ❤️</span>
+      </div>
 
-    <div v-if="!!errorMessage">Error: {{ errorMessage }}</div>
-    <div v-if="configState === EConfigState.INITIAL">
-      <p>This page will help you setup the app.</p>
-      <p>Press the button "select Folder" and pick the folder where your Selfcompassion Audios are stored.</p>
-      <p>Please make sure to provide the required permissions to the app when prompted.</p>
-      <p>Checkin back on this page to see the status anytime and pick another folder if you like.</p>
-    </div>
+      <div v-if="!!errorMessage">Error: {{ errorMessage }}</div>
+      <div v-if="configState === EConfigState.INITIAL">
+        <p>This page will help you setup the app.</p>
+        <p>Press the button "select Folder" and pick the folder where your Selfcompassion Audios are stored.</p>
+        <p>Please make sure to provide the required permissions to the app when prompted.</p>
+        <p>Checkin back on this page to see the status anytime and pick another folder if you like.</p>
+      </div>
 
-    <TextButton
-      class="setup-page__text-button"
-      text="Select Folder"
-      :width-mode="EButtonWidthMode.WIDE"
-      @click="selectFolder"
-    />
-
-    <div v-if="configState !== EConfigState.INITIAL"
-      class="setup-page__reset-section">
-      <p>Any troubles? Try resetting the app and start fresh:</p>
       <TextButton
         class="setup-page__text-button"
-        text="Reset App"
+        text="Select Folder"
         :width-mode="EButtonWidthMode.WIDE"
-        @click="resetStore"
+        @click="selectFolder"
       />
+
+      <div v-if="configState !== EConfigState.INITIAL"
+        class="setup-page__reset-section">
+        <p class="setup-page__troubles-text">Any troubles? Try resetting the app and start fresh:</p>
+        <TextButton
+          class="setup-page__text-button"
+          text="Reset App"
+          :width-mode="EButtonWidthMode.WIDE"
+          @click="resetStore"
+        />
+      </div>
     </div>
+    <p class="setup-page__version-tag">Version 0.1.0</p>
   </div>
 </template>
 
@@ -63,12 +66,12 @@
     }
     await audioStore.setAudioFiles(audioMap);
     await audioStore.setConfigState(setupInfo.configState);
-    console.log(`audio store setup done -> continue to state: `)
     configState.value = setupInfo.configState;
   }
 
   const resetStore = async () => {
     await audioStore.resetStore();
+    configState.value = audioStore.getConfigState();
   }
 
   const extractDateKey = (filename: string): string => {
@@ -82,9 +85,7 @@
   }
 
   onMounted(() => {
-    console.log(`SETUP > initial state: ${configState.value}`);
     configState.value = audioStore.getConfigState();
-    console.log(`SETUP > retrieved state: ${configState.value}`);
   });
 </script>
 
@@ -94,8 +95,14 @@
     padding-top: 40px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     background-color: var(--color-page-bg);
     height: 100%;
+
+    &__main-content {
+      display: flex;
+      flex-direction: column;
+    }
 
     &__text-button {
       margin-top: 40px;
@@ -103,6 +110,14 @@
 
     &__reset-section {
       margin-top: 72px;
+    }
+
+    &__troubles-text {
+      margin: 0;
+    }
+
+    &__version-tag {
+      align-self: center;
     }
   }
 </style>

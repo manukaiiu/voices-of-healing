@@ -3,9 +3,18 @@
   --color-medium-rose: #bc6bbd;
   --color-light-rose: #e5cae6;
 
-  --color-header-bg: var(--color-heavy-rose);
-  --color-page-bg: var(--color-light-rose);
+  --color-heavy-green: #225740;
+  --color-medium-green: #41906e;
+  --color-light-green: #daede0;
 
-  --color-button-bg: var(--color-heavy-rose);
-  --color-button-bg-hover: var(--color-medium-rose)
+  --color-header-bg: var(--color-heavy-green);
+  --color-page-bg: var(--color-light-green);
+  --color-button-bg: var(--color-heavy-green);
+  --color-button-bg-hover: var(--color-medium-green)
+
+  /* rose color scheme */
+  /* --color-header-bg: var(--color-heavy-rose);
+    --color-page-bg: var(--color-light-rose);
+    --color-button-bg: var(--color-heavy-rose);
+    --color-button-bg-hover: var(--color-medium-rose); */
 }

@@ -19,18 +19,13 @@ public class DirectoryAnalyzer {
   }
 
   public JSArray listFilesInDirectory(Uri directoryUri) throws Exception {
-    Log.d(TAG, "Listing files in directoryUri (Tree URI): " + directoryUri.toString());
-
     ContentResolver contentResolver = context.getContentResolver();
-
     String directoryDocumentId = DocumentsContract.getTreeDocumentId(directoryUri);
-    Log.d(TAG, "Directory Document ID: " + directoryDocumentId);
 
     Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(
       directoryUri,
       directoryDocumentId
     );
-    Log.d(TAG, "Children URI: " + childrenUri.toString());
 
     JSArray fileList = new JSArray();
 
@@ -73,7 +68,6 @@ public class DirectoryAnalyzer {
         Log.e(TAG, "Cursor is null. Could not query children URIs.");
       }
     } catch (Exception e) {
-      Log.e(TAG, "Error querying directory", e);
       throw e;
     }
 

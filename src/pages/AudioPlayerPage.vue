@@ -26,7 +26,7 @@
           @click="jumpToToday"/>
       </div>
     </div>
-    <audio-controls :audio-file-path="currentAudioFilePath" />
+    <audio-controls :audio-file-uri="currentAudioFileUri" />
   </div>
 </template>
 
@@ -48,7 +48,7 @@
   const audioDate = ref('');
   const todayDate = ref<Date>(new Date());
   const currentDate = ref<Date>(new Date());
-  const currentAudioFilePath = ref<string | null>(null);
+  const currentAudioFileUri = ref<string | null>(null);
 
   const showTodayButton = computed(() => {
     console.log(`today is: ${todayDate.value}`);
@@ -77,10 +77,11 @@
   };
 
   const selectAudioForDate = (desiredDate: Date): void => {
+    console.log(`>!> Audio Player: trying to select audio for Date: ${desiredDate}`);
     const audioStoreEntry = audioStore.getAudioByDate(desiredDate);
-    currentAudioFilePath.value = audioStoreEntry.fileUri;
+    currentAudioFileUri.value = audioStoreEntry.fileUri;
     audioDate.value = audioStoreEntry.formattedDate;
-    console.log(`Audio Player working with filepath: ${currentAudioFilePath.value}`);
+    console.log(`>!> Audio Player working with filepath: ${currentAudioFileUri.value}`);
   }
 
   onMounted(() => {

@@ -1,6 +1,7 @@
 import { formatFilenameToDateString } from '@/utils/utils';
 import { defineStore } from 'pinia';
 import { Preferences } from '@capacitor/preferences';
+import { toRaw } from 'vue';
 
 export enum EConfigState {
   INITIAL = 'initial',
@@ -30,36 +31,48 @@ export const useAudioStore = defineStore('audio', {
     async resetStore() {
       this.configState = EConfigState.INITIAL;
       this.audioMap = {};
-      await Preferences.set({ key: 'configState', value: this.configState });
-      await Preferences.set({ key: 'audioMap', value: JSON.stringify({}) });
+      try {
+        await Preferences.set({ key: 'configState', value: this.configState });
+        await Preferences.set({ key: 'audioMap', value: JSON.stringify({}) });
+      } catch(e) {
+        console.log('>!> ReSetting preferences produced an error: ', e);
+      }
     },
 
     async setConfigState(configState: EConfigState) {
       this.configState = configState;
-      await Preferences.set({ key: 'configState', value: configState });
+      try {
+        await Preferences.set({ key: 'configState', value: configState });
+      } catch(e) {
+        console.log('>!> Setting preferences:configState produced an error: ', e);
+      }
     },
 
     async setAudioFiles(audioMap: TAudioMap) {
       this.audioMap = audioMap;
-      console.log(`STORING audiomap: ${JSON.stringify(audioMap, null, 2)}`);
-      await Preferences.set({ key: 'audioMap', value: JSON.stringify(audioMap) });
+      try {
+        await Preferences.set({ key: 'audioMap', value: JSON.stringify(toRaw(audioMap)) });
+      } catch(e) {
+        console.log('>!> Setting preferences:audiomap produced an error: ', e);
+      }
     },
 
     async loadPreferences(): Promise<EConfigState> {
-      console.log(`AUDIO STORE > loading preferences`);
-      const { value: state } = await Preferences.get({ key: 'configState' });
-      const { value: audioMap } = await Preferences.get({ key: 'audioMap' });
-      if(state && audioMap) {
-        this.configState = JSON.parse(state);
-        console.log(`>!> loaded config state: ${this.configState}`);
-        this.audioMap = JSON.parse(audioMap);
-        console.log(`>!> loaded audio map: `, this.audioMap);
-        console.log(`AUDIO STORE > loading preferences DONE`);
-        return this.configState;
+      try {
+        const { value: state } = await Preferences.get({ key: 'configState' });
+        const { value: audioMap } = await Preferences.get({ key: 'audioMap' });
+        if(state && audioMap) {
+          this.configState = state as EConfigState;
+          this.audioMap = {};
+          this.audioMap = JSON.parse(audioMap);
+          return this.configState;
+        }
+      } catch(e) {
+        console.log('>!> Retrieving preferences produced an error: ', e);
       }
+
       this.configState = EConfigState.INITIAL;
       this.audioMap = {};
-      console.log(`AUDIO STORE > loading empty preferences DONE`);
       return this.configState;
     }
   },
@@ -72,8 +85,6 @@ export const useAudioStore = defineStore('audio', {
         const month = (searchDate.getMonth() + 1).toString().padStart(2, '0');
         const day = searchDate.getDate().toString().padStart(2, '0');
         const dateKey = `${month}-${day}`;
-
-        console.log(`Retrieving audio file name for date "${searchDate}" with key "${dateKey}" => ${state.audioMap[dateKey]}`);
 
         return {
           fileUri: state.audioMap[dateKey].fileUri ?? '',

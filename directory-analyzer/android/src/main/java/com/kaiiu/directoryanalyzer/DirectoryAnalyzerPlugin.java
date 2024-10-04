@@ -42,7 +42,6 @@ public class DirectoryAnalyzerPlugin extends Plugin {
     intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-    // Start the activity to select a directory
     startActivityForResult(call, intent, "handleDirectorySelected");
   }
 
@@ -51,7 +50,6 @@ public class DirectoryAnalyzerPlugin extends Plugin {
     if (result.getResultCode() == Activity.RESULT_OK) {
       Uri directoryUri = result.getData().getData();
 
-      // Take persistable permissions
       final int takeFlags = result.getData().getFlags()
         & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
@@ -81,7 +79,6 @@ public class DirectoryAnalyzerPlugin extends Plugin {
       ret.put("files", files);
       call.resolve(ret);
     } catch (Exception e) {
-      Log.e("DirectoryAnalyzerPlugin", "Error in listFilesInDirectory", e);
       call.reject("Error listing files in directory", e);
     }
   }
@@ -130,14 +127,14 @@ public class DirectoryAnalyzerPlugin extends Plugin {
 
   @PluginMethod
   public void skipForward(PluginCall call) {
-      int milliseconds = call.getInt("milliseconds", 5000); // Default to 5 seconds
+      int milliseconds = call.getInt("milliseconds", 5000);
       audioPlayer.skipForward(milliseconds);
       call.resolve();
   }
 
   @PluginMethod
   public void skipBackward(PluginCall call) {
-      int milliseconds = call.getInt("milliseconds", 5000); // Default to 5 seconds
+      int milliseconds = call.getInt("milliseconds", 5000);
       audioPlayer.skipBackward(milliseconds);
       call.resolve();
   }

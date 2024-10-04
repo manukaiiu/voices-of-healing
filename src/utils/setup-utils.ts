@@ -33,10 +33,7 @@ export class SetupUtils {
     try {
       const result = await DirectoryAnalyzer.listFilesInDirectory({ directoryUri });
       const files = result.files as FileInfo[];
-      console.log('Files in directory:', files);
-
       const mp3Files = files.filter(file => file.mimeType === 'audio/mpeg');
-      console.log('Found mp3 count:', mp3Files.length);
 
       return mp3Files.map(mp3File => ({
         name: mp3File.name,

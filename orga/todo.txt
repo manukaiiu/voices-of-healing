@@ -1,10 +1,9 @@
-* style progress-bar
-* add loading spinner for settings
-* make sure persisting works - load on start
-* make sure storage is cleared if new directory is set
-* force settings page if no valid settings are stored
-* load on app start from storage
-* fix bug: change day -> current position is not reset
-* add calendar picker
-* test on my android
-* cleanup code and refactor
+* change day > reset position in audio
+* test "back to today"
+* style progress bar nicer
+* change app icon
+* do some code cleanup
+
+nice to have:
+* loading spinner for settings (but it just takes 0.3 seconds, no no issue...)
+* add date-picker to go to different dates

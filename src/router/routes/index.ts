@@ -11,7 +11,7 @@ const routes: RouteRecordRaw[] = [
     name: ERoutes.SETUP,
     path: ERoutes.SETUP,
     meta: {
-      headerTitle: 'Setup v0.0.12',
+      headerTitle: 'Setup',
       showSettingsButton: false,
       showBackButton: true,
       backRoute: ERoutes.PLAYER,
